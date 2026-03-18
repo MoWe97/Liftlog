@@ -1,0 +1,19 @@
+.env
+ 
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+ 
+# Database files
+*.db
+*.sqlite
+ 
+# Node
+node_modules/
+dist/
+ 
+# OS
+.DS_Store
+Thumbs.db
