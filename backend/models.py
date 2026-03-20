@@ -50,6 +50,16 @@ class Exercise(SQLModel, table=True):
     )
     session_exercises: list["SessionExercise"] = Relationship(back_populates="exercise")
 
+class ExerciseCreate(SQLModel):
+    name: str
+    workout_types_ids: list[int]
+
+class ExerciseRead(SQLModel):
+    id: int
+    name: str
+    workout_types: list[WorkoutType]
+
+
 class WorkoutSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     date: date

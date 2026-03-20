@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Depends
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from database import get_session, create_tables
 from contextlib import asynccontextmanager
-from models import WorkoutType, WorkoutTypeName, WorkoutSession, WorkoutSessionCreate, Set, SetCreate, SessionExercise
+from models import WorkoutType, WorkoutTypeName, WorkoutSession, WorkoutSessionCreate, Set, SetCreate, SessionExercise, \
+    Exercise, ExerciseCreate, ExerciseWorkoutTypeLink, ExerciseRead
 
 
 @asynccontextmanager
@@ -42,6 +44,29 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
 @app.get("/workout-session", response_model=list[WorkoutSession])
 def get_workout_session(session: Session = Depends(get_session)):
     items = session.exec(select(WorkoutSession)).all()
+    return items
+
+@app.post("/exercise", response_model=Exercise)
+def create_exercise(exercise: ExerciseCreate, session: Session = Depends(get_session)):
+    workout_types = session.exec(select(WorkoutType).where(WorkoutType.id.in_(exercise.workout_types_ids))).all()
+    item = Exercise(name=exercise.name, workout_types=workout_types)
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+@app.get("/exercises", response_model=list[ExerciseRead])
+def get_exercises(session: Session = Depends(get_session)):
+    items = session.exec(select(Exercise)).all()
+    return items
+
+@app.get("/workout-type/{workout_type_id}/exercises", response_model=list[Exercise])
+def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(get_session)):
+    items = session.exec(
+        select(Exercise)
+        .join(ExerciseWorkoutTypeLink)
+        .where(ExerciseWorkoutTypeLink.workout_type_id == workout_type_id)
+    ).all()
     return items
 
 @app.post("/workout-session/{workout_session_id}/exercise/{exercise_id}/session-exercise", response_model=SessionExercise)
