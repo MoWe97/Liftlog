@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from sqlmodel import Session, select
 from database import get_session, create_tables
 from contextlib import asynccontextmanager
-from models import WorkoutType, WorkoutTypeName, WorkoutSession, WorkoutSessionCreate
+from models import WorkoutType, WorkoutTypeName, WorkoutSession, WorkoutSessionCreate, Set, SetCreate, SessionExercise
 
 
 @asynccontextmanager
@@ -38,3 +38,28 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
     session.commit()
     session.refresh(item)
     return item
+
+@app.get("/workout-session", response_model=list[WorkoutSession])
+def get_workout_session(session: Session = Depends(get_session)):
+    items = session.exec(select(WorkoutSession)).all()
+    return items
+
+@app.post("/workout-session/{workout_session_id}/exercise/{exercise_id}/session-exercise", response_model=SessionExercise)
+def create_workout_session_exercise(workout_session_id: int, exercise_id: int, session: Session = Depends(get_session)):
+    item = SessionExercise.model_validate({"workout_session_id": workout_session_id, "exercise_id": exercise_id})
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+@app.post("/session-exercise/{session_exercise_id}/sets", response_model=list[Set])
+def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate], session: Session = Depends(get_session)):
+    items = []
+    for new_set in sets:
+        item = Set.model_validate({**new_set.model_dump(),"session_exercise_id": session_exercise_id})
+        session.add(item)
+        items.append(item)
+    session.commit()
+    for item in items:
+        session.refresh(item)
+    return items

@@ -84,3 +84,10 @@ class Set(SQLModel, table=True):
     duration_seconds: Optional[int] = None
 
     session_exercise: Optional[SessionExercise] = Relationship(back_populates="sets")
+
+class SetCreate(SQLModel):
+    session_exercise_id: int
+    unit: ResistanceUnit
+    value: Optional[float] = None
+    reps: Optional[int] = None
+    duration_seconds: Optional[int] = None
