@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from database import get_session, create_tables
@@ -68,6 +68,15 @@ def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(
         .where(ExerciseWorkoutTypeLink.workout_type_id == workout_type_id)
     ).all()
     return items
+
+@app.delete("/exercises/{exercise_id}", response_model=ExerciseRead)
+def delete_exercise(exercise_id: int, session: Session = Depends(get_session)):
+    item = session.get(Exercise, exercise_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Exercise not found")
+    session.delete(item)
+    session.commit()
+    return item
 
 @app.post("/workout-session/{workout_session_id}/exercise/{exercise_id}/session-exercise", response_model=SessionExercise)
 def create_workout_session_exercise(workout_session_id: int, exercise_id: int, session: Session = Depends(get_session)):
