@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
+from datetime import date as Date
 from models import WorkoutSession, WorkoutSessionCreate
 
 router = APIRouter()
@@ -14,6 +15,18 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
     return item
 
 @router.get("/workout-sessions", response_model=list[WorkoutSession])
-def get_workout_session(session: Session = Depends(get_session)):
-    items = session.exec(select(WorkoutSession)).all()
+def get_workout_session(date: Date = None, session: Session = Depends(get_session)):
+    query = select(WorkoutSession)
+    if date:
+        query = query.where(WorkoutSession.date == date)
+    items = session.exec(query).all()
     return items
+
+@router.delete("/workout-session/{workout_session_id}", response_model=WorkoutSession)
+def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
+    item = session.get(WorkoutSession, workout_session_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Exercise not found")
+    session.delete(item)
+    session.commit()
+    return item
