@@ -16,6 +16,11 @@ venv/
 # Node
 node_modules/
 dist/
+
+# Frontend
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
  
 # OS
 .DS_Store
