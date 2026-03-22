@@ -13,14 +13,13 @@ function HomePage() {
     return (
         <div className="flex flex-row h-screen w-full">
             <div className="w-64">left</div>
-            <div className="flex-1">middle</div>
+            <div className="flex-1">
+                     {sessions.map(session => (
+                         <WorkoutSessionCard key={session.id} session={session} />
+                     ))}
+            </div>
             <div className="w-64">right</div>
         </div>
-        // <div>
-        //     {sessions.map(session => (
-        //         <WorkoutSessionCard key={session.id} session={session} />
-        //     ))}
-        // </div>
     );
 }
 

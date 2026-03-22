@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 import './App.css'
-import type {WorkoutSession} from "./types";
-import {getWorkoutSessions} from "./api/workoutSessions.ts";
-import HomePage from "./pages/HomePage.tsx";
+import {getWorkoutSessions} from "@/api/workoutSessions.ts";
+import HomePage from "@/pages/HomePage.tsx";
+import type {WorkoutSession} from "@/types";
 
 function App() {
   const [count, setCount] = useState(0)
