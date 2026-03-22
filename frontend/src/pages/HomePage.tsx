@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import type {WorkoutSession} from "../types";
 import { getWorkoutSessions } from "../api/workoutSessions";
-import WorkoutSessionCard from "../components/WorkoutSessionCard";
 import Navbar from "@/components/navbar.tsx";
 import Sidebar from "@/components/sidebar.tsx";
+import MainPanel from "@/components/MainPanel.tsx";
 
 function HomePage() {
     const [sessions, setSessions] = useState<WorkoutSession[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    function dateChange(date: Date) {
-        console.log(date);
-        setSelectedDate(date);
-    }
 
     useEffect(() => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
@@ -22,11 +18,9 @@ function HomePage() {
         <div>
                 <Navbar/>
             <div className="flex flex-row flex-1 pt-6">
-                <Sidebar selectedDate={selectedDate} onDateChange={dateChange} />
+                <Sidebar selectedDate={selectedDate} onDateChange={setSelectedDate} />
             <div className="flex-1">
-                     {sessions.map(session => (
-                         <WorkoutSessionCard key={session.id} session={session} />
-                     ))}
+                <MainPanel selectedDate={selectedDate} sessions={sessions} />
             </div>
             <div className="w-64">right</div>
         </div>
