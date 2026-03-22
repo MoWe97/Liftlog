@@ -3,6 +3,7 @@ import './App.css'
 import {getWorkoutSessions} from "@/api/workoutSessions.ts";
 import HomePage from "@/pages/HomePage.tsx";
 import type {WorkoutSession} from "@/types";
+import {ThemeProvider} from "@/components/theme-provider.tsx";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,7 +15,9 @@ function App() {
   }, []);
 
   return (
-      <HomePage></HomePage>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <HomePage></HomePage>
+      </ThemeProvider>
   );
 }
 
