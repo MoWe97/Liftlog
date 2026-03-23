@@ -4,6 +4,10 @@ import {Button} from "@/components/ui/button.tsx";
 import {HugeiconsIcon} from "@hugeicons/react";
 import {AddIcon} from "@hugeicons/core-free-icons";
 import {useTranslation} from "react-i18next";
+import Navbar from "@/components/navbar.tsx";
+import Sidebar from "@/components/sidebar.tsx";
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty.tsx";
+import {Dumbbell} from "lucide-react";
 
 interface Props {
     selectedDate: Date;
@@ -11,31 +15,56 @@ interface Props {
 }
 
 function MainPanel({ selectedDate, sessions }: Props) {
-    const { i18n } = useTranslation();
-
-
+    const { t, i18n } = useTranslation();
 
     return (
-        <div className="flex-1 p-6 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col px-5">
-                    <span className="text-xs text-muted-foreground uppercase tracking-widest">
-                        {selectedDate.toLocaleDateString(i18n.language, { weekday: "long" })}
-                    </span>
-                    <span className="text-2xl font-bold tracking-tight">
-                        {selectedDate.toLocaleDateString(i18n.language, { month: "long", day: "numeric" })}
-                    </span>
+        <>
+            {/* Desktop */}
+            <div className="hidden md:flex flex-1 p-6 flex-col gap-4">
+                <h2 className="text-2xl font-bold tracking-tight text-center">
+                    {selectedDate.toLocaleDateString(i18n.language, { weekday: "long", month: "long", day: "numeric" })}
+                </h2>
+                <div className="flex flex-col gap-3">
+                    {sessions.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
+                            <span className="text-4xl">🏋️</span>
+                            <span className="text-sm">No sessions recorded</span>
+                        </div>
+                    ) : (
+                        sessions.map(session => (
+                            <WorkoutSessionCard key={session.id} session={session} />
+                        ))
+                    )}
                 </div>
-                <Button variant="ghost">
-                    <HugeiconsIcon icon={AddIcon}/>
-                </Button>
             </div>
-            <div className="flex flex-col gap-3">
-                {sessions.map(session => (
-                    <WorkoutSessionCard key={session.id} session={session} />
-                ))}
+
+            {/* Mobile */}
+            <div className="flex md:hidden flex-1 p-2 flex-col gap-4">
+                <h3 className="text-xl font-bold tracking-tight text-center">
+                    {selectedDate.toLocaleDateString(i18n.language, { month: "long", day: "numeric", year: "numeric" })}
+                </h3>
+                <div className="flex flex-col gap-3">
+                    {sessions.length === 0 ? (
+                        <Empty className="bg-muted/30">
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <Dumbbell />
+                                    </EmptyMedia>
+                                    <EmptyTitle>{t("main_panel.no_workout_session1")}</EmptyTitle>
+                                    <EmptyDescription>{t("main_panel.no_workout_session2")}</EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent>
+                                    <Button>{t("main_panel.new_session_button")}</Button>
+                                </EmptyContent>
+                            </Empty>
+                    ) : (
+                        sessions.map(session => (
+                            <WorkoutSessionCard key={session.id} session={session} />
+                        ))
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

@@ -7,7 +7,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources: {
-            en: { translation: { "navbar": {"lang_select": "Select a language"} } },
+            en: { translation: { "navbar": {"lang_select": "Select a language"}, "main_panel": {"no_workout_session1": "No recorded sessions for this day", "no_workout_session2": "Lets start one!", "new_session_button": "New Session"} } },
             de: { translation: { "navbar": {"lang_select": "Wähle eine Sprache"} } },
             ja: { translation: { "navbar": {"lang_select": "言語を選択"} } },
         },
