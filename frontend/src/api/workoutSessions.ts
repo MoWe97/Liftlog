@@ -11,3 +11,7 @@ export const addWorkoutSession = async (date: string, workout_type_id: number): 
     const response = await client.post("/workout-session", { date, workout_type_id });
     return response.data;
 };
+
+export const deleteWorkoutSession = async (id: number): Promise<void> => {
+    await client.delete(`/workout-session/${id}`);
+};

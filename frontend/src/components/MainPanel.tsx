@@ -1,10 +1,9 @@
-import type {WorkoutSession, WorkoutType} from "@/types";
+import type { WorkoutType} from "@/types";
 import WorkoutSessionCard from "@/components/WorkoutSessionCard.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useTranslation} from "react-i18next";
 import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty.tsx";
 import {Dumbbell} from "lucide-react";
-import {addWorkoutSession} from "@/api/workoutSessions.ts";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,20 +11,30 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
+import {useSessionStore} from "@/stores/workout-session-store.ts";
+import {useEffect} from "react";
+import {useWorkoutTypesStore} from "@/stores/workout-types-store.ts";
 
 interface Props {
     selectedDate: Date;
-    sessions: WorkoutSession[];
-    workoutTypes: WorkoutType[];
-    onSessionAdded: () => void;
 }
 
-function MainPanel({ selectedDate, sessions, workoutTypes, onSessionAdded }: Props) {
+function MainPanel({ selectedDate }: Props) {
     const { t, i18n } = useTranslation();
+    const { sessions, addSession , fetchSessions} = useSessionStore();
+    const { workout_types, fetchWorkoutTypes } = useWorkoutTypesStore();
+
     const onAddWorkoutSession = (workoutType: WorkoutType) => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
-        addWorkoutSession(dateStr, workoutType.id).then(onSessionAdded);
+        addSession(dateStr, workoutType.id);
     }
+
+    useEffect(() => {
+        const dateStr = selectedDate.toLocaleDateString("en-CA");
+        fetchSessions(dateStr).then();
+        fetchWorkoutTypes().then();
+    }, [selectedDate]);
+
 
     return (
         <>
@@ -70,8 +79,8 @@ function MainPanel({ selectedDate, sessions, workoutTypes, onSessionAdded }: Pro
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
                                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                            {workoutTypes.map((workoutType) => (
-                                                <DropdownMenuItem key={workoutType.id} onClick={() => onAddWorkoutSession(workoutType)}>{workoutType.name}</DropdownMenuItem>
+                                            {workout_types.map((workout_type) => (
+                                                <DropdownMenuItem key={workout_type.id} onClick={() => onAddWorkoutSession(workout_type)}>{workout_type.name}</DropdownMenuItem>
                                             ))}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
