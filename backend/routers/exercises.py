@@ -29,7 +29,7 @@ def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(
     ).all()
     return items
 
-@router.delete("/exercises/{exercise_id}", response_model=ExerciseRead)
+@router.delete("/exercises/{exercise_id}", response_model=Exercise)
 def delete_exercise(exercise_id: int, session: Session = Depends(get_session)):
     item = session.get(Exercise, exercise_id)
     if not item:

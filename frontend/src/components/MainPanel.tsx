@@ -62,7 +62,7 @@ function MainPanel({ selectedDate }: Props) {
                 <h3 className="text-xl font-bold tracking-tight text-center">
                     {selectedDate.toLocaleDateString(i18n.language, { month: "long", day: "numeric", year: "numeric" })}
                 </h3>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 px-6">
                     {sessions.length === 0 ? (
                         <Empty className="bg-muted/30">
                             <EmptyHeader>
@@ -88,7 +88,7 @@ function MainPanel({ selectedDate }: Props) {
                         </Empty>
                     ) : (
                         sessions.map(session => (
-                            <WorkoutSessionCard key={session.id} session={session} />
+                                <WorkoutSessionCard  key={session.id} session={session} />
                         ))
                     )}
                 </div>

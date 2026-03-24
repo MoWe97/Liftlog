@@ -1,0 +1,10 @@
+{
+  "main_panel": {
+    "new_session_button": "Neue Einheit",
+    "no_workout_session1": "Keine Einheiten für diesen Tag",
+    "no_workout_session2": "Lass uns eine starten!"
+  },
+  "navbar": {
+    "lang_select": "Wähle eine Sprache"
+  }
+}

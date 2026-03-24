@@ -1,0 +1,15 @@
+{
+  "main_panel": {
+    "new_session_button": "New Session",
+    "no_workout_session1": "No recorded sessions for this day",
+    "no_workout_session2": "Lets start one!"
+  },
+  "navbar": {
+    "lang_select": "Select a language"
+  },
+  "workout_session_card": {
+    "add_exercise": "Add exercise",
+    "copy_from_last_session": "Copy from last session",
+    "no_exercises": "No exercise"
+  }
+}

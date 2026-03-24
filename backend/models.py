@@ -107,4 +107,4 @@ class WorkoutSessionRead(SQLModel):
     date: date
     workout_type_id: Optional[int]
     workout_type: Optional[WorkoutType] = None
-    #session_exercises: list[SessionExercise]
+    session_exercises: list[SessionExercise]

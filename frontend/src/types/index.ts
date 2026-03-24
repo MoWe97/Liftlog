@@ -3,9 +3,18 @@ export interface WorkoutType {
     name: string;
 }
 
+export interface SessionExercise {
+    id: number;
+    workout_session_id: number;
+    exercise_id: number;
+    workout_session: WorkoutSession;
+    // exercise: Exercise
+    // sets: ExerciseSet[]
+}
 export interface WorkoutSession {
     id: number;
     date: string;
     workout_type_id?: number;
     workout_type?: WorkoutType;
+    session_exercises: SessionExercise[];
 }

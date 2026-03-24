@@ -1,0 +1,10 @@
+{
+  "main_panel": {
+    "new_session_button": "新しいセッション",
+    "no_workout_session1": "この日のセッションはありません",
+    "no_workout_session2": "始めましょう！"
+  },
+  "navbar": {
+    "lang_select": "言語を選択"
+  }
+}

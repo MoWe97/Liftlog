@@ -23,7 +23,7 @@ def get_workout_session(date: Date = None, session: Session = Depends(get_sessio
     items = session.exec(query).all()
     return items
 
-@router.delete("/workout-session/{workout_session_id}", response_model=WorkoutSessionRead)
+@router.delete("/workout-session/{workout_session_id}", response_model=WorkoutSession)
 def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
     item = session.get(WorkoutSession, workout_session_id)
     if not item:
