@@ -20,7 +20,7 @@ def get_exercises(session: Session = Depends(get_session)):
     items = session.exec(select(Exercise)).all()
     return items
 
-@router.get("/workout-type/{workout_type_id}/exercises", response_model=list[Exercise])
+@router.get("/workout-type/{workout_type_id}/exercises", response_model=list[ExerciseRead])
 def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(get_session)):
     items = session.exec(
         select(Exercise)

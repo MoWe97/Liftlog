@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from database import get_session
 from datetime import date as Date
-from models import WorkoutSession, WorkoutSessionCreate
+from models import WorkoutSession, WorkoutSessionCreate, WorkoutSessionRead
 
 router = APIRouter()
 
-@router.post("/workout-session", response_model=WorkoutSession)
+@router.post("/workout-session", response_model=WorkoutSessionRead)
 def create_workout_session(workout_session: WorkoutSessionCreate, session: Session = Depends(get_session)):
     item = WorkoutSession.model_validate(workout_session)
     session.add(item)
@@ -14,7 +15,7 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
     session.refresh(item)
     return item
 
-@router.get("/workout-sessions", response_model=list[WorkoutSession])
+@router.get("/workout-sessions", response_model=list[WorkoutSessionRead])
 def get_workout_session(date: Date = None, session: Session = Depends(get_session)):
     query = select(WorkoutSession)
     if date:
@@ -22,7 +23,7 @@ def get_workout_session(date: Date = None, session: Session = Depends(get_sessio
     items = session.exec(query).all()
     return items
 
-@router.delete("/workout-session/{workout_session_id}", response_model=WorkoutSession)
+@router.delete("/workout-session/{workout_session_id}", response_model=WorkoutSessionRead)
 def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
     item = session.get(WorkoutSession, workout_session_id)
     if not item:

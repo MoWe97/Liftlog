@@ -101,3 +101,10 @@ class SetCreate(SQLModel):
     value: Optional[float] = None
     reps: Optional[int] = None
     duration_seconds: Optional[int] = None
+
+class WorkoutSessionRead(SQLModel):
+    id: int
+    date: date
+    workout_type_id: Optional[int]
+    workout_type: Optional[WorkoutType] = None
+    #session_exercises: list[SessionExercise]
