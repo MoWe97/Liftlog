@@ -14,6 +14,7 @@ import {
 import {useSessionStore} from "@/stores/workout-session-store.ts";
 import {useEffect} from "react";
 import {useWorkoutTypesStore} from "@/stores/workout-types-store.ts";
+import {useExerciseStore} from "@/stores/exercises-store.ts";
 
 interface Props {
     selectedDate: Date;
@@ -23,6 +24,7 @@ function MainPanel({ selectedDate }: Props) {
     const { t, i18n } = useTranslation();
     const { sessions, addSession , fetchSessions} = useSessionStore();
     const { workout_types, fetchWorkoutTypes } = useWorkoutTypesStore();
+    const {exercises, fetchExercises} = useExerciseStore()
 
     const onAddWorkoutSession = (workoutType: WorkoutType) => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
@@ -32,6 +34,7 @@ function MainPanel({ selectedDate }: Props) {
     useEffect(() => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
         fetchSessions(dateStr).then();
+        fetchExercises().then();
         fetchWorkoutTypes().then();
     }, [selectedDate]);
 
@@ -51,7 +54,7 @@ function MainPanel({ selectedDate }: Props) {
                         </div>
                     ) : (
                         sessions.map(session => (
-                            <WorkoutSessionCard key={session.id} session={session} />
+                            <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
                         ))
                     )}
                 </div>
@@ -88,7 +91,7 @@ function MainPanel({ selectedDate }: Props) {
                         </Empty>
                     ) : (
                         sessions.map(session => (
-                                <WorkoutSessionCard  key={session.id} session={session} />
+                            <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
                         ))
                     )}
                 </div>

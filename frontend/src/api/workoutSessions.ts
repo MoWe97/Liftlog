@@ -1,5 +1,5 @@
 import client from "./client";
-import type {WorkoutSession} from "../types";
+import type {SessionExercise, WorkoutSession} from "../types";
 
 export const getWorkoutSessions = async (date?: string): Promise<WorkoutSession[]> => {
     const params = date ? { date } : {};
@@ -7,10 +7,25 @@ export const getWorkoutSessions = async (date?: string): Promise<WorkoutSession[
     return response.data;
 };
 
+export const getWorkoutSessionById = async (workout_session_id: number): Promise<WorkoutSession> => {
+    const response = await client.get(`/workout-session/${workout_session_id}`);
+    return response.data;
+};
+
 export const addWorkoutSession = async (date: string, workout_type_id: number): Promise<WorkoutSession> => {
     const response = await client.post("/workout-session", { date, workout_type_id });
     return response.data;
 };
+
+export const addExerciseToSession = async (
+    workout_session_id: number,
+    exercise_id: number
+): Promise<SessionExercise> => {
+    const response = await client.post(
+        `/workout-session/${workout_session_id}/exercise/${exercise_id}/session-exercise`
+    )
+    return response.data
+}
 
 export const deleteWorkoutSession = async (id: number): Promise<void> => {
     await client.delete(`/workout-session/${id}`);

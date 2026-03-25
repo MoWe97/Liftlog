@@ -1,18 +1,26 @@
-import type { WorkoutSession } from "@/types";
+import type {Exercise, WorkoutSession} from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button.tsx";
 import { useSessionStore } from "@/stores/workout-session-store.ts";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
 import { Dumbbell, Trash2 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.tsx";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu.tsx";
 import { useTranslation } from "react-i18next";
+import WorkoutSessionExerciseColumn from "@/components/workout-session-exercise-column.tsx";
 
 interface Props {
     session: WorkoutSession;
+    exercises: Exercise[];
 }
 
-function WorkoutSessionCard({ session }: Props) {
-    const { deleteSession } = useSessionStore();
+function WorkoutSessionCard({ session, exercises }: Props) {
+    const { deleteSession, addSessionExercise } = useSessionStore();
     const { t } = useTranslation();
 
     return (
@@ -45,11 +53,14 @@ function WorkoutSessionCard({ session }: Props) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>Add Exercise</DropdownMenuLabel>
+                                    {exercises.map((exercise) => (
+                                        <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>{exercise.name}</DropdownMenuItem>
+                                    ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </EmptyContent>
                     </Empty>
-                ) : <></>}
+                ) : <WorkoutSessionExerciseColumn/>}
             </CardContent>
         </Card>
     );

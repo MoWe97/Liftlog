@@ -15,8 +15,15 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
     session.refresh(item)
     return item
 
+@router.get("/workout-session/{workout_session_id}", response_model=WorkoutSessionRead)
+def get_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
+    item = session.get(WorkoutSession, workout_session_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return item
+
 @router.get("/workout-sessions", response_model=list[WorkoutSessionRead])
-def get_workout_session(date: Date = None, session: Session = Depends(get_session)):
+def get_workout_sessions(date: Date = None, session: Session = Depends(get_session)):
     query = select(WorkoutSession)
     if date:
         query = query.where(WorkoutSession.date == date)
@@ -27,7 +34,7 @@ def get_workout_session(date: Date = None, session: Session = Depends(get_sessio
 def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
     item = session.get(WorkoutSession, workout_session_id)
     if not item:
-        raise HTTPException(status_code=404, detail="Exercise not found")
+        raise HTTPException(status_code=404, detail="Session not found")
     session.delete(item)
     session.commit()
     return item
