@@ -81,7 +81,7 @@ function MainPanel({ selectedDate }: Props) {
                                         <Button>{t("main_panel.new_session_button")}</Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                            <DropdownMenuLabel>{t("main_panel.select_workout_type")}</DropdownMenuLabel>
                                             {workout_types.map((workout_type) => (
                                                 <DropdownMenuItem key={workout_type.id} onClick={() => onAddWorkoutSession(workout_type)}>{workout_type.name}</DropdownMenuItem>
                                             ))}
