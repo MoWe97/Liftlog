@@ -21,6 +21,9 @@ interface Props {
 
 function WorkoutSessionCard({ session, exercises }: Props) {
     const { deleteSession, addSessionExercise } = useSessionStore();
+    const exercisesOfSessionWorkoutType = exercises.filter(
+        e => e.workout_types.some(({id}) => id === session.workout_type_id)
+    );
     const { t } = useTranslation();
 
     return (
@@ -53,7 +56,7 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>Add Exercise</DropdownMenuLabel>
-                                    {exercises.map((exercise) => (
+                                    {exercisesOfSessionWorkoutType.map((exercise) => (
                                         <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>{exercise.name}</DropdownMenuItem>
                                     ))}
                                 </DropdownMenuContent>

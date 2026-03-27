@@ -3,7 +3,7 @@
     "new_session_button": "New Session",
     "no_workout_session1": "No recorded sessions for this day",
     "no_workout_session2": "Lets start one!",
-    "select_workout_type": "What are you training today?",
+    "select_workout_type": "What are you training today?"
   },
   "navbar": {
     "lang_select": "Select a language"
