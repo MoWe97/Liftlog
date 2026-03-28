@@ -1,5 +1,5 @@
 import client from "./client";
-import type {SessionExercise, WorkoutSession} from "../types";
+import type {ExerciseSet, SessionExercise, WorkoutSession} from "../types";
 
 export const getWorkoutSessions = async (date?: string): Promise<WorkoutSession[]> => {
     const params = date ? { date } : {};
@@ -26,6 +26,11 @@ export const addExerciseToSession = async (
     )
     return response.data
 }
+
+export const addSetToSessionExercise = async (session_exercise_id: number, exerciseSets: Partial<ExerciseSet[]>): Promise<ExerciseSet[]> => {
+    const response = await client.post(`/session-exercise/${session_exercise_id}/sets`, exerciseSets);
+    return response.data;
+};
 
 export const deleteWorkoutSession = async (id: number): Promise<void> => {
     await client.delete(`/workout-session/${id}`);
