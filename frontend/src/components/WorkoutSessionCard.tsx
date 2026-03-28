@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button.tsx";
 import { useSessionStore } from "@/stores/workout-session-store.ts";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
-import { Dumbbell, Trash2 } from "lucide-react";
+import {Dumbbell, PlusIcon, Trash2} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { useTranslation } from "react-i18next";
 import WorkoutSessionExerciseColumn from "@/components/workout-session-exercise-column.tsx";
-import {useEffect} from "react";
 
 interface Props {
     session: WorkoutSession;
@@ -56,7 +55,6 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                                     <Button>{t("workout_session_card.add_exercise")}</Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuLabel>Add Exercise</DropdownMenuLabel>
                                     {exercisesOfSessionWorkoutType.map((exercise) => (
                                         <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>{exercise.name}</DropdownMenuItem>
                                     ))}
@@ -68,6 +66,19 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                     session.session_exercises.map((exercise) => (
                         <WorkoutSessionExerciseColumn key={exercise.id} session_exercise={exercise}/>
                     ))}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant={"default"} size={"icon"} className={"p-2"}>
+                            <PlusIcon size={16}/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Add Exercise</DropdownMenuLabel>
+                        {exercisesOfSessionWorkoutType.map((exercise) => (
+                            <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>{exercise.name}</DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </CardContent>
         </Card>
     );
