@@ -1,6 +1,17 @@
+type ResistanceUnit = "kg" | "lbs" | "bodyweight"
+
 export interface WorkoutType {
     id: number;
     name: string;
+}
+
+export interface ExerciseSet {
+    id: number;
+    session_exercise_id: number;
+    unit: ResistanceUnit
+    value: number | undefined;
+    reps: number | undefined;
+    duration_seconds: number | undefined;
 }
 
 export interface Exercise {
@@ -13,10 +24,10 @@ export interface SessionExercise {
     id: number;
     workout_session_id: number;
     exercise_id: number;
-    workout_session: WorkoutSession;
     exercise: Exercise
-    // sets: ExerciseSet[]
+    sets: ExerciseSet[]
 }
+
 export interface WorkoutSession {
     id: number;
     date: string;

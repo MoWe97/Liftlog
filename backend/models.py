@@ -95,6 +95,14 @@ class Set(SQLModel, table=True):
 
     session_exercise: Optional[SessionExercise] = Relationship(back_populates="sets")
 
+class SetRead(SQLModel):
+    id: int
+    session_exercise_id: int
+    unit: ResistanceUnit
+    value: Optional[float] = None
+    reps: Optional[int] = None
+    duration_seconds: Optional[int] = None
+
 class SetCreate(SQLModel):
     session_exercise_id: int
     unit: ResistanceUnit
@@ -102,9 +110,15 @@ class SetCreate(SQLModel):
     reps: Optional[int] = None
     duration_seconds: Optional[int] = None
 
+class SessionExerciseRead(SQLModel):
+    id: int
+    workout_session_id: int
+    exercise: ExerciseRead
+    sets: list["SetRead"]
+
 class WorkoutSessionRead(SQLModel):
     id: int
     date: date
     workout_type_id: Optional[int]
     workout_type: Optional[WorkoutType] = None
-    session_exercises: list[SessionExercise]
+    session_exercises: list[SessionExerciseRead]

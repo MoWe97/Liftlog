@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 from database import get_session
-from models import SessionExercise
+from models import SessionExercise, SessionExerciseRead
 
 router = APIRouter()
 
@@ -13,7 +13,7 @@ def create_workout_session_exercise(workout_session_id: int, exercise_id: int, s
     session.refresh(item)
     return item
 
-@router.get("/workout-session/{workout_session_id}/session-exercises", response_model=list[SessionExercise])
+@router.get("/workout-session/{workout_session_id}/session-exercises", response_model=list[SessionExerciseRead])
 def get_workout_session_exercises(workout_session_id: int, session: Session = Depends(get_session)):
     items = session.exec(
         select(SessionExercise)

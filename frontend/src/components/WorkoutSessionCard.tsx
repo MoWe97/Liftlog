@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { useTranslation } from "react-i18next";
 import WorkoutSessionExerciseColumn from "@/components/workout-session-exercise-column.tsx";
+import {useEffect} from "react";
 
 interface Props {
     session: WorkoutSession;
@@ -63,7 +64,10 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                             </DropdownMenu>
                         </EmptyContent>
                     </Empty>
-                ) : <WorkoutSessionExerciseColumn/>}
+                ) :
+                    session.session_exercises.map((exercise) => (
+                        <WorkoutSessionExerciseColumn key={exercise.id} session_exercise={exercise}/>
+                    ))}
             </CardContent>
         </Card>
     );
