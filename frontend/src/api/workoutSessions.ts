@@ -32,6 +32,10 @@ export const addSetToSessionExercise = async (session_exercise_id: number, exerc
     return response.data;
 };
 
+export const deleteSet = async (set_id: number): Promise<void> => {
+    await client.delete(`/sets/${set_id}`);
+};
+
 export const deleteWorkoutSession = async (id: number): Promise<void> => {
     await client.delete(`/workout-session/${id}`);
 };

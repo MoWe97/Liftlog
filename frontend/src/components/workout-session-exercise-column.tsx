@@ -30,11 +30,12 @@ function WorkoutSessionExerciseColumn({ session_exercise }: Props){
     const displaySets = session_exercise.sets;
     const groups = groupSets(displaySets);
     const [editMode, setEditMode] = useState(false);
-    const { addSetToSessionExercise } = useSessionStore();
+    const { addSetToSessionExercise, deleteSet } = useSessionStore();
 
     function handleDeleteSet(id: number): void {
-        console.log("delete", id);
+        deleteSet(session_exercise.workout_session_id, id);
     }
+
     function addSet(): void {
         const newSet: Partial<ExerciseSet> = {
             session_exercise_id: session_exercise.id,
