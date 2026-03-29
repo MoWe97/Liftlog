@@ -7,15 +7,31 @@ import {useState} from "react";
 import {cn} from "@/lib/utils.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {useSessionStore} from "@/stores/workout-session-store.ts";
+import {useDebouncedCallback} from "use-debounce";
 
 interface Props {
     session_exercise: SessionExercise;
 }
 
 function WorkoutSessionExerciseColumn({ session_exercise }: Props){
-    const handleRepsChange = (id: number, value: string) => {
-        console.log("reps change", id, value);
+    const [sets, setSets] = useState<ExerciseSet[]>(session_exercise.sets);
+    const { addSetToSessionExercise, deleteSet } = useSessionStore();
+
+    const saveReps = useDebouncedCallback((id: number, reps: number) => {
+        console.log('save to backend', id, reps); // TODO: PATCH /sets/{id}
+    }, 1000);
+
+    const handleRepsChange = (id: number, raw: string) => {
+        const cleaned = raw.replace(/[^0-9]/g, '');
+        const reps = cleaned === '' ? undefined : parseInt(cleaned, 10);
+
+        setSets(prev =>
+            prev.map(s => s.id === id ? { ...s, reps } : s)
+        );
+
+        if (reps !== undefined) saveReps(id, reps);
     };
+
     const groupSets = (sets: ExerciseSet[]) => {
         return sets.reduce<ExerciseSet[][]>((groups, set) => {
             const lastGroup = groups[groups.length - 1];
@@ -27,21 +43,31 @@ function WorkoutSessionExerciseColumn({ session_exercise }: Props){
             return groups;
         }, []);
     };
-    const displaySets = session_exercise.sets;
+    const displaySets = sets;
     const groups = groupSets(displaySets);
     const [editMode, setEditMode] = useState(false);
-    const { addSetToSessionExercise, deleteSet } = useSessionStore();
+
+
 
     function handleDeleteSet(id: number): void {
+        setSets(prev => prev.filter(s => s.id !== id));
         deleteSet(session_exercise.workout_session_id, id);
     }
 
     function addSet(): void {
-        const newSet: Partial<ExerciseSet> = {
+        const { value, unit } = sets.length > 0
+            ? { value: sets[sets.length - 1].value, unit: sets[sets.length - 1].unit }
+            : { value: 0, unit: 'kg' as const };
+
+        const newSet: ExerciseSet = {
+            id: -(sets.length + 1), // temp id
             session_exercise_id: session_exercise.id,
-            unit: "kg",
-            reps: 0
-        }
+            unit,
+            value,
+            reps: undefined,
+            duration_seconds: undefined,
+        };
+        setSets(prev => [...prev, newSet]);
         addSetToSessionExercise(session_exercise.workout_session_id, session_exercise.id, [newSet]);
     }
 
@@ -93,11 +119,11 @@ function WorkoutSessionExerciseColumn({ session_exercise }: Props){
                                         :
                                     <Input
                                         key={set.id}
+                                        maxLength={2}
                                         type="text"
                                         inputMode="numeric"
-                                        className="w-9 h-9 text-center text-sm bg-transparent border-primary/20"
-                                        placeholder="0"
-                                        value={set.reps ?? ''}
+                                        className="w-9 h-9 text-center text-xs bg-transparent border-primary/20"
+                                        value={set.reps || ''}
                                         onChange={e => handleRepsChange(set.id, e.target.value)}
                                     />
                                 ))}
