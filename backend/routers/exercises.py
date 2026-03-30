@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from starlette.exceptions import HTTPException
 from database import get_session
-from models import Exercise, ExerciseCreate, WorkoutType, ExerciseRead, ExerciseWorkoutTypeLink
+from models import Exercise, ExerciseCreate, ExerciseRead, WorkoutType, ExerciseWorkoutTypeLink
 
 router = APIRouter()
 
-@router.post("/exercise", response_model=Exercise)
+
+@router.post("/exercises", response_model=ExerciseRead)
 def create_exercise(exercise: ExerciseCreate, session: Session = Depends(get_session)):
     workout_types = session.exec(select(WorkoutType).where(WorkoutType.id.in_(exercise.workout_types_ids))).all()
     item = Exercise(name=exercise.name, workout_types=workout_types)
@@ -15,12 +15,14 @@ def create_exercise(exercise: ExerciseCreate, session: Session = Depends(get_ses
     session.refresh(item)
     return item
 
+
 @router.get("/exercises", response_model=list[ExerciseRead])
 def get_exercises(session: Session = Depends(get_session)):
     items = session.exec(select(Exercise)).all()
     return items
 
-@router.get("/workout-type/{workout_type_id}/exercises", response_model=list[ExerciseRead])
+
+@router.get("/workout-types/{workout_type_id}/exercises", response_model=list[ExerciseRead])
 def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(get_session)):
     items = session.exec(
         select(Exercise)
@@ -29,7 +31,8 @@ def get_workout_type_exercises(workout_type_id: int, session: Session = Depends(
     ).all()
     return items
 
-@router.delete("/exercises/{exercise_id}", response_model=Exercise)
+
+@router.delete("/exercises/{exercise_id}", response_model=ExerciseRead)
 def delete_exercise(exercise_id: int, session: Session = Depends(get_session)):
     item = session.get(Exercise, exercise_id)
     if not item:

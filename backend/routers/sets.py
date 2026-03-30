@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
-from models import Set, SetCreate, SetUpdate
+from models import Set, SetCreate, SetRead, SetUpdate
 
 router = APIRouter()
 
-@router.post("/session-exercise/{session_exercise_id}/sets", response_model=list[Set])
+
+@router.post("/session-exercise/{session_exercise_id}/sets", response_model=list[SetRead])
 def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate], session: Session = Depends(get_session)):
     items = []
     for new_set in sets:
-        item = Set.model_validate({**new_set.model_dump(),"session_exercise_id": session_exercise_id})
+        item = Set.model_validate({**new_set.model_dump(), "session_exercise_id": session_exercise_id})
         session.add(item)
         items.append(item)
     session.commit()
@@ -17,7 +18,8 @@ def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate]
         session.refresh(item)
     return items
 
-@router.get("/session-exercise/{session_exercise_id}/sets", response_model=list[Set])
+
+@router.get("/session-exercise/{session_exercise_id}/sets", response_model=list[SetRead])
 def get_session_exercise_sets(session_exercise_id: int, session: Session = Depends(get_session)):
     items = session.exec(
         select(Set)
@@ -25,7 +27,8 @@ def get_session_exercise_sets(session_exercise_id: int, session: Session = Depen
     ).all()
     return items
 
-@router.delete("/sets/{set_id}", response_model=Set)
+
+@router.delete("/sets/{set_id}", response_model=SetRead)
 def delete_set(set_id: int, session: Session = Depends(get_session)):
     item = session.get(Set, set_id)
     if not item:
@@ -34,7 +37,8 @@ def delete_set(set_id: int, session: Session = Depends(get_session)):
     session.commit()
     return item
 
-@router.patch("/sets/{set_id}", response_model=Set)
+
+@router.patch("/sets/{set_id}", response_model=SetRead)
 def update_set(set_id: int, set_update: SetUpdate, session: Session = Depends(get_session)):
     item = session.get(Set, set_id)
     if not item:

@@ -4,7 +4,7 @@ from datetime import date
 from enum import Enum
 
 
-# ── Enums ────────────────────────────────────────────────────────────────────
+# ── Enums ─────────────────────────────────────────────────────────────────────
 
 class WorkoutTypeName(str, Enum):
     PUSH = "Push"
@@ -18,7 +18,7 @@ class ResistanceUnit(str, Enum):
     BODYWEIGHT = "bodyweight"
 
 
-# ── Link table (many-to-many: Exercise ↔ WorkoutType) ────────────────────────
+# ── Link table (many-to-many: Exercise ↔ WorkoutType) ─────────────────────────
 
 class ExerciseWorkoutTypeLink(SQLModel, table=True):
     exercise_id: Optional[int] = Field(
@@ -50,15 +50,6 @@ class Exercise(SQLModel, table=True):
     )
     session_exercises: list["SessionExercise"] = Relationship(back_populates="exercise")
 
-class ExerciseCreate(SQLModel):
-    name: str
-    workout_types_ids: list[int]
-
-class ExerciseRead(SQLModel):
-    id: int
-    name: str
-    workout_types: list[WorkoutType]
-
 
 class WorkoutSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -67,11 +58,6 @@ class WorkoutSession(SQLModel, table=True):
 
     workout_type: Optional[WorkoutType] = Relationship(back_populates="workout_sessions")
     session_exercises: list["SessionExercise"] = Relationship(back_populates="workout_session")
-
-
-class WorkoutSessionCreate(SQLModel):
-    date: date
-    workout_type_id: int
 
 
 class SessionExercise(SQLModel, table=True):
@@ -94,37 +80,3 @@ class Set(SQLModel, table=True):
     duration_seconds: Optional[int] = None
 
     session_exercise: Optional[SessionExercise] = Relationship(back_populates="sets")
-
-class SetRead(SQLModel):
-    id: int
-    session_exercise_id: int
-    unit: ResistanceUnit
-    value: Optional[float] = None
-    reps: Optional[int] = None
-    duration_seconds: Optional[int] = None
-
-class SetCreate(SQLModel):
-    session_exercise_id: int
-    unit: ResistanceUnit
-    value: Optional[float] = None
-    reps: Optional[int] = None
-    duration_seconds: Optional[int] = None
-
-class SessionExerciseRead(SQLModel):
-    id: int
-    workout_session_id: int
-    exercise: ExerciseRead
-    sets: list["SetRead"]
-
-class WorkoutSessionRead(SQLModel):
-    id: int
-    date: date
-    workout_type_id: Optional[int]
-    workout_type: Optional[WorkoutType] = None
-    session_exercises: list[SessionExerciseRead]
-
-class SetUpdate(SQLModel):
-    reps: int | None = None
-    value: float | None = None
-    unit: str | None = None
-    duration_seconds: int | None = None

@@ -1,5 +1,5 @@
 import client from "./client";
-import type {ExerciseSet, SessionExercise, WorkoutSession} from "../types";
+import type { ExerciseSet, SessionExercise, WorkoutSession } from "../types";
 
 export const getWorkoutSessions = async (date?: string): Promise<WorkoutSession[]> => {
     const params = date ? { date } : {};
@@ -8,12 +8,12 @@ export const getWorkoutSessions = async (date?: string): Promise<WorkoutSession[
 };
 
 export const getWorkoutSessionById = async (workout_session_id: number): Promise<WorkoutSession> => {
-    const response = await client.get(`/workout-session/${workout_session_id}`);
+    const response = await client.get(`/workout-sessions/${workout_session_id}`);
     return response.data;
 };
 
 export const addWorkoutSession = async (date: string, workout_type_id: number): Promise<WorkoutSession> => {
-    const response = await client.post("/workout-session", { date, workout_type_id });
+    const response = await client.post("/workout-sessions", { date, workout_type_id });
     return response.data;
 };
 
@@ -22,10 +22,10 @@ export const addExerciseToSession = async (
     exercise_id: number
 ): Promise<SessionExercise> => {
     const response = await client.post(
-        `/workout-session/${workout_session_id}/exercise/${exercise_id}/session-exercise`
-    )
-    return response.data
-}
+        `/workout-sessions/${workout_session_id}/exercises?exercise_id=${exercise_id}`
+    );
+    return response.data;
+};
 
 export const addSetToSessionExercise = async (session_exercise_id: number, exerciseSets: Partial<ExerciseSet[]>): Promise<ExerciseSet[]> => {
     const response = await client.post(`/session-exercise/${session_exercise_id}/sets`, exerciseSets);
@@ -33,13 +33,13 @@ export const addSetToSessionExercise = async (session_exercise_id: number, exerc
 };
 
 export const changeReps = async (set_id: number, reps: number): Promise<void> => {
-    await client.patch(`/sets/${set_id}`, {reps});
-}
+    await client.patch(`/sets/${set_id}`, { reps });
+};
 
 export const deleteSet = async (set_id: number): Promise<void> => {
     await client.delete(`/sets/${set_id}`);
 };
 
 export const deleteWorkoutSession = async (id: number): Promise<void> => {
-    await client.delete(`/workout-session/${id}`);
+    await client.delete(`/workout-sessions/${id}`);
 };

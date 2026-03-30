@@ -1,4 +1,4 @@
-import type {Exercise} from "@/types";
+import type { Exercise } from "@/types";
 import client from "@/api/client.ts";
 
 export const getExercises = async (): Promise<Exercise[]> => {
@@ -7,10 +7,10 @@ export const getExercises = async (): Promise<Exercise[]> => {
 };
 
 export const addExercise = async (workout_type_id: number): Promise<Exercise> => {
-    const response = await client.post("/exercise", { workout_type_id });
+    const response = await client.post("/exercises", { workout_type_id });
     return response.data;
 };
 
 export const deleteExercise = async (id: number): Promise<void> => {
-    await client.delete(`/exercise/${id}`);
+    await client.delete(`/exercises/${id}`);
 };
