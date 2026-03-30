@@ -15,10 +15,10 @@ interface Props {
 
 function WorkoutSessionExerciseColumn({ session_exercise }: Props){
     const [sets, setSets] = useState<ExerciseSet[]>(session_exercise.sets);
-    const { addSetToSessionExercise, deleteSet } = useSessionStore();
+    const { addSetToSessionExercise, deleteSet, changeReps } = useSessionStore();
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
-        console.log('save to backend', id, reps); // TODO: PATCH /sets/{id}
+        changeReps(session_exercise.workout_session_id, id, reps)
     }, 1000);
 
     const handleRepsChange = (id: number, raw: string) => {

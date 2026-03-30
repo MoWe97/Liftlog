@@ -32,6 +32,10 @@ export const addSetToSessionExercise = async (session_exercise_id: number, exerc
     return response.data;
 };
 
+export const changeReps = async (set_id: number, reps: number): Promise<void> => {
+    await client.patch(`/sets/${set_id}`, {reps});
+}
+
 export const deleteSet = async (set_id: number): Promise<void> => {
     await client.delete(`/sets/${set_id}`);
 };

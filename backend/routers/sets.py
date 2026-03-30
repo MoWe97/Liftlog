@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
-from models import Set, SetCreate
+from models import Set, SetCreate, SetUpdate
 
 router = APIRouter()
 
@@ -32,4 +32,17 @@ def delete_set(set_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Set not found")
     session.delete(item)
     session.commit()
+    return item
+
+@router.patch("/sets/{set_id}", response_model=Set)
+def update_set(set_id: int, set_update: SetUpdate, session: Session = Depends(get_session)):
+    item = session.get(Set, set_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Set not found")
+    update_data = set_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(item, key, value)
+    session.add(item)
+    session.commit()
+    session.refresh(item)
     return item

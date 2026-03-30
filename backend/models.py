@@ -122,3 +122,9 @@ class WorkoutSessionRead(SQLModel):
     workout_type_id: Optional[int]
     workout_type: Optional[WorkoutType] = None
     session_exercises: list[SessionExerciseRead]
+
+class SetUpdate(SQLModel):
+    reps: int | None = None
+    value: float | None = None
+    unit: str | None = None
+    duration_seconds: int | None = None
