@@ -8,7 +8,7 @@ export interface WorkoutType {
 export interface ExerciseSet {
     id: number;
     session_exercise_id: number;
-    unit: ResistanceUnit
+    unit: ResistanceUnit;
     value: number | undefined;
     reps: number | undefined;
     duration_seconds: number | undefined;
@@ -23,9 +23,8 @@ export interface Exercise {
 export interface SessionExercise {
     id: number;
     workout_session_id: number;
-    exercise_id: number;
-    exercise: Exercise
-    sets: ExerciseSet[]
+    exercise: Exercise;
+    sets: ExerciseSet[];
 }
 
 export interface WorkoutSession {

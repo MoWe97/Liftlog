@@ -1,20 +1,20 @@
-import type { WorkoutType} from "@/types";
-import WorkoutSessionCard from "@/components/WorkoutSessionCard.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {useTranslation} from "react-i18next";
-import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty.tsx";
-import {Dumbbell} from "lucide-react";
+import type { WorkoutType } from "@/types";
+import WorkoutSessionCard from "@/components/workout-session-card.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { useTranslation } from "react-i18next";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
+import { Dumbbell } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuTrigger
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
-import {useSessionStore} from "@/stores/workout-session-store.ts";
-import {useEffect} from "react";
-import {useWorkoutTypesStore} from "@/stores/workout-types-store.ts";
-import {useExerciseStore} from "@/stores/exercises-store.ts";
+import { useSessionStore } from "@/stores/workout-session-store.ts";
+import { useEffect } from "react";
+import { useWorkoutTypesStore } from "@/stores/workout-types-store.ts";
+import { useExerciseStore } from "@/stores/exercises-store.ts";
 
 interface Props {
     selectedDate: Date;
@@ -22,14 +22,14 @@ interface Props {
 
 function MainPanel({ selectedDate }: Props) {
     const { t, i18n } = useTranslation();
-    const { sessions, addSession , fetchSessions} = useSessionStore();
-    const { workout_types, fetchWorkoutTypes } = useWorkoutTypesStore();
-    const {exercises, fetchExercises} = useExerciseStore()
+    const { sessions, addSession, fetchSessions } = useSessionStore();
+    const { workoutTypes, fetchWorkoutTypes } = useWorkoutTypesStore();
+    const { exercises, fetchExercises } = useExerciseStore();
 
     const onAddWorkoutSession = (workoutType: WorkoutType) => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
         addSession(dateStr, workoutType.id);
-    }
+    };
 
     useEffect(() => {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
@@ -37,7 +37,6 @@ function MainPanel({ selectedDate }: Props) {
         fetchExercises().then();
         fetchWorkoutTypes().then();
     }, [selectedDate]);
-
 
     return (
         <>
@@ -81,10 +80,12 @@ function MainPanel({ selectedDate }: Props) {
                                         <Button>{t("main_panel.new_session_button")}</Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                            <DropdownMenuLabel>{t("main_panel.select_workout_type")}</DropdownMenuLabel>
-                                            {workout_types.map((workout_type) => (
-                                                <DropdownMenuItem key={workout_type.id} onClick={() => onAddWorkoutSession(workout_type)}>{workout_type.name}</DropdownMenuItem>
-                                            ))}
+                                        <DropdownMenuLabel>{t("main_panel.select_workout_type")}</DropdownMenuLabel>
+                                        {workoutTypes.map((workoutType) => (
+                                            <DropdownMenuItem key={workoutType.id} onClick={() => onAddWorkoutSession(workoutType)}>
+                                                {workoutType.name}
+                                            </DropdownMenuItem>
+                                        ))}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </EmptyContent>
