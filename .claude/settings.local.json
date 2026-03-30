@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/mcmow/VSC-Git-Projects/Liftlog -path */venv -prune -o -path */node_modules -prune -o -name *auth* -o -name *user* -o -name *login* -type f -print)",
+      "Bash(find /c/Users/mcmow/VSC-Git-Projects/Liftlog/backend -path */venv -prune -o -name *.py -type f -print)",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/mcmow/VSC-Git-Projects/Liftlog/frontend/src -maxdepth 3 -type f -name *.ts -o -name *.tsx)",
+      "Bash(find /c/Users/mcmow/VSC-Git-Projects/Liftlog -maxdepth 2 -type f \\\\\\(-name *.yml -o -name *.yaml -o -name Dockerfile* -o -name *.sh -o -name nginx.conf \\\\\\))"
+    ]
+  }
+}

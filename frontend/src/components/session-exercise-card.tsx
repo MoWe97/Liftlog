@@ -6,7 +6,7 @@ import { Pencil, PlusIcon, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
-import { useSessionStore } from "@/stores/workout-session-store.ts";
+import { useSetStore } from "@/stores/set-store";
 import { useDebouncedCallback } from "use-debounce";
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 function SessionExerciseCard({ sessionExercise }: Props) {
     const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
-    const { addSetToSessionExercise, deleteSet, changeReps } = useSessionStore();
+    const { addSet, deleteSet, changeReps } = useSetStore();
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
         changeReps(sessionExercise.workout_session_id, id, reps);
@@ -64,7 +64,7 @@ function SessionExerciseCard({ sessionExercise }: Props) {
             duration_seconds: undefined,
         };
         setSets(prev => [...prev, newSet]);
-        addSetToSessionExercise(sessionExercise.workout_session_id, sessionExercise.id, [newSet]);
+        addSet(sessionExercise.workout_session_id, sessionExercise.id, [newSet]);
     }
 
     return (
