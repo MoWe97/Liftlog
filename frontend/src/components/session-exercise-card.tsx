@@ -16,7 +16,7 @@ interface Props {
 function SessionExerciseCard({ sessionExercise }: Props) {
     const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
-    const { addSet, deleteSet, changeReps } = useSetStore();
+    const { addSet: addSetToStore, deleteSet, changeReps } = useSetStore();
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
         changeReps(sessionExercise.workout_session_id, id, reps);
@@ -50,21 +50,24 @@ function SessionExerciseCard({ sessionExercise }: Props) {
         deleteSet(sessionExercise.workout_session_id, id);
     }
 
-    function addSet(): void {
+    async function handleAddSet(): Promise<void> {
         const { value, unit } = sets.length > 0
             ? { value: sets[sets.length - 1].value, unit: sets[sets.length - 1].unit }
             : { value: 0, unit: 'kg' as const };
 
-        const newSet: ExerciseSet = {
-            id: -(sets.length + 1), // temp id
+        const tempId = -(sets.length + 1);
+        const tempSet: ExerciseSet = {
+            id: tempId,
             session_exercise_id: sessionExercise.id,
             unit,
             value,
             reps: undefined,
             duration_seconds: undefined,
         };
-        setSets(prev => [...prev, newSet]);
-        addSet(sessionExercise.workout_session_id, sessionExercise.id, [newSet]);
+        setSets(prev => [...prev, tempSet]);
+
+        const [created] = await addSetToStore(sessionExercise.workout_session_id, sessionExercise.id, [tempSet]);
+        setSets(prev => prev.map(s => s.id === tempId ? created : s));
     }
 
     return (
@@ -128,7 +131,7 @@ function SessionExerciseCard({ sessionExercise }: Props) {
                         variant="outline"
                         size="icon"
                         className="mt-7"
-                        onClick={addSet}
+                        onClick={handleAddSet}
                     >
                         <PlusIcon size={16} />
                     </Button>

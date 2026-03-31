@@ -4,38 +4,63 @@ import {
     addSetToSessionExercise,
     deleteSet,
     changeReps,
-    getWorkoutSessionById,
 } from "@/api/workoutSessions";
 import { useSessionStore } from "@/stores/workout-session-store";
 
-async function refreshSession(workout_session_id: number) {
-    const updated = await getWorkoutSessionById(workout_session_id);
-    useSessionStore.setState((state) => ({
-        sessions: state.sessions.map((s) =>
-            s.id === updated.id ? updated : s
-        ),
-    }));
-}
-
 interface SetStore {
-    addSet: (workout_session_id: number, session_exercise_id: number, sets: Partial<ExerciseSet>[]) => Promise<void>;
+    addSet: (workout_session_id: number, session_exercise_id: number, sets: Partial<ExerciseSet>[]) => Promise<ExerciseSet[]>;
     changeReps: (workout_session_id: number, set_id: number, reps: number) => Promise<void>;
     deleteSet: (workout_session_id: number, set_id: number) => Promise<void>;
 }
 
 export const useSetStore = create<SetStore>(() => ({
     addSet: async (workout_session_id, session_exercise_id, sets) => {
-        await addSetToSessionExercise(session_exercise_id, sets);
-        await refreshSession(workout_session_id);
+        const created = await addSetToSessionExercise(session_exercise_id, sets);
+        useSessionStore.setState((state) => ({
+            sessions: state.sessions.map((s) =>
+                s.id !== workout_session_id ? s : {
+                    ...s,
+                    session_exercises: s.session_exercises.map((se) =>
+                        se.id !== session_exercise_id ? se : {
+                            ...se,
+                            sets: [...se.sets, ...created],
+                        }
+                    ),
+                }
+            ),
+        }));
+        return created;
     },
 
     changeReps: async (workout_session_id, set_id, reps) => {
         await changeReps(set_id, reps);
-        await refreshSession(workout_session_id);
+        useSessionStore.setState((state) => ({
+            sessions: state.sessions.map((s) =>
+                s.id !== workout_session_id ? s : {
+                    ...s,
+                    session_exercises: s.session_exercises.map((se) => ({
+                        ...se,
+                        sets: se.sets.map((set) =>
+                            set.id !== set_id ? set : { ...set, reps }
+                        ),
+                    })),
+                }
+            ),
+        }));
     },
 
     deleteSet: async (workout_session_id, set_id) => {
         await deleteSet(set_id);
-        await refreshSession(workout_session_id);
+        useSessionStore.setState((state) => ({
+            sessions: state.sessions.map((s) =>
+                s.id !== workout_session_id ? s : {
+                    ...s,
+                    session_exercises: s.session_exercises.map((se) => ({
+                        ...se,
+                        sets: se.sets.filter((set) => set.id !== set_id),
+                    })),
+                }
+            ),
+        }));
     },
 }));
