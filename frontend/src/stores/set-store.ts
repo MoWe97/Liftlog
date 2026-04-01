@@ -3,13 +3,13 @@ import type { ExerciseSet } from "@/types";
 import {
     addSetToSessionExercise,
     deleteSet,
-    changeReps,
+    patchSet,
 } from "@/api/workoutSessions";
 import { useSessionStore } from "@/stores/workout-session-store";
 
 interface SetStore {
     addSet: (workout_session_id: number, session_exercise_id: number, sets: Partial<ExerciseSet>[]) => Promise<ExerciseSet[]>;
-    changeReps: (workout_session_id: number, set_id: number, reps: number) => Promise<void>;
+    patchSet: (workout_session_id: number, set_id: number, patch: Partial<Pick<ExerciseSet, 'reps' | 'value' | 'unit'>>) => Promise<void>;
     deleteSet: (workout_session_id: number, set_id: number) => Promise<void>;
 }
 
@@ -32,8 +32,8 @@ export const useSetStore = create<SetStore>(() => ({
         return created;
     },
 
-    changeReps: async (workout_session_id, set_id, reps) => {
-        await changeReps(set_id, reps);
+    patchSet: async (workout_session_id, set_id, patch) => {
+        await patchSet(set_id, patch);
         useSessionStore.setState((state) => ({
             sessions: state.sessions.map((s) =>
                 s.id !== workout_session_id ? s : {
@@ -41,7 +41,7 @@ export const useSetStore = create<SetStore>(() => ({
                     session_exercises: s.session_exercises.map((se) => ({
                         ...se,
                         sets: se.sets.map((set) =>
-                            set.id !== set_id ? set : { ...set, reps }
+                            set.id !== set_id ? set : { ...set, ...patch }
                         ),
                     })),
                 }

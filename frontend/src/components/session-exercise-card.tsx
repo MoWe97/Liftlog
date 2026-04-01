@@ -16,10 +16,10 @@ interface Props {
 function SessionExerciseCard({ sessionExercise }: Props) {
     const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
-    const { addSet: addSetToStore, deleteSet, changeReps } = useSetStore();
+    const { addSet: addSetToStore, deleteSet, patchSet } = useSetStore();
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
-        changeReps(sessionExercise.workout_session_id, id, reps);
+        patchSet(sessionExercise.workout_session_id, id, { reps });
     }, 1000);
 
     const handleRepsChange = (id: number, raw: string) => {

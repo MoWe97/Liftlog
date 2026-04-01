@@ -32,8 +32,8 @@ export const addSetToSessionExercise = async (session_exercise_id: number, exerc
     return response.data;
 };
 
-export const changeReps = async (set_id: number, reps: number): Promise<void> => {
-    await client.patch(`/sets/${set_id}`, { reps });
+export const patchSet = async (set_id: number, patch: Partial<Pick<ExerciseSet, 'reps' | 'value' | 'unit'>>): Promise<void> => {
+    await client.patch(`/sets/${set_id}`, patch);
 };
 
 export const deleteSet = async (set_id: number): Promise<void> => {
