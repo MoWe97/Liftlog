@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input.tsx";
 import type { ExerciseSet, SessionExercise } from "@/types";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Pencil, PlusIcon, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { useSetStore } from "@/stores/set-store";
@@ -16,6 +16,9 @@ interface Props {
 function SessionExerciseCard({ sessionExercise }: Props) {
     const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
+    const [editingWeightSetIds, setEditingWeightSetIds] = useState<number[] | null>(null);
+    const [weightDraft, setWeightDraft] = useState('');
+    const weightInputRef = useRef<HTMLInputElement>(null);
     const { addSet: addSetToStore, deleteSet, patchSet } = useSetStore();
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
@@ -25,9 +28,7 @@ function SessionExerciseCard({ sessionExercise }: Props) {
     const handleRepsChange = (id: number, raw: string) => {
         const cleaned = raw.replace(/[^0-9]/g, '');
         const reps = cleaned === '' ? undefined : parseInt(cleaned, 10);
-
         setSets(prev => prev.map(s => s.id === id ? { ...s, reps } : s));
-
         if (reps !== undefined) saveReps(id, reps);
     };
 
@@ -42,8 +43,6 @@ function SessionExerciseCard({ sessionExercise }: Props) {
             return groups;
         }, []);
     };
-
-    const groups = groupSets(sets);
 
     function handleDeleteSet(id: number): void {
         setSets(prev => prev.filter(s => s.id !== id));
@@ -70,6 +69,27 @@ function SessionExerciseCard({ sessionExercise }: Props) {
         setSets(prev => prev.map(s => s.id === tempId ? created : s));
     }
 
+    function openWeightEdit(ids: number[], currentValue: number | undefined) {
+        setEditingWeightSetIds(ids);
+        setWeightDraft(currentValue?.toString() ?? '');
+        setTimeout(() => weightInputRef.current?.focus(), 0);
+    }
+
+    function commitWeightEdit() {
+        const newValue = parseFloat(weightDraft);
+        if (!isNaN(newValue) && editingWeightSetIds) {
+            setSets(prev => prev.map(s =>
+                editingWeightSetIds.includes(s.id) ? { ...s, value: newValue } : s
+            ));
+            for (const id of editingWeightSetIds) {
+                patchSet(sessionExercise.workout_session_id, id, { value: newValue });
+            }
+        }
+        setEditingWeightSetIds(null);
+    }
+
+    const groups = groupSets(sets);
+
     return (
         <Item variant="outline" size="xs">
             <ItemContent className="w-full">
@@ -85,52 +105,119 @@ function SessionExerciseCard({ sessionExercise }: Props) {
                     </span>
                 </div>
                 <Separator />
-                <div className="flex gap-2">
-                    {groups.map((group, groupIndex) => (
-                        <div
-                            key={groupIndex}
-                            className="flex flex-col gap-1 border rounded-md h-16 p-1 m-1 border-primary/30 bg-primary/5"
-                        >
-                            <div className="flex justify-between items-center px-1">
-                                <button className="text-xs font-extralight">
-                                    {group[0].unit === 'bodyweight' ? 'BW' : `${group[0].value ?? '—'}kg`}
-                                </button>
-                                {group.slice(1).map((set) => (
-                                    <button key={set.id} className="text-xs text-muted-foreground">
-                                        {set.unit === 'bodyweight' ? 'BW' : `${set.value ?? '—'}kg`}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex gap-1">
-                                {group.map((set) => (
-                                    editMode ? (
-                                        <Button
-                                            key={set.id}
-                                            onClick={() => handleDeleteSet(set.id)}
-                                            variant="destructive"
-                                            size="icon"
-                                        >
-                                            <X size={16} />
-                                        </Button>
+                <div className="flex gap-2 flex-wrap">
+                    {editMode ? (
+                        // Edit mode: each set individually with weight above and delete button below
+                        sets.map((set) => {
+                            const isPending = set.id < 0;
+                            const isBodyweight = set.unit === 'bodyweight';
+                            const weightLabel = isBodyweight ? 'BW' : `${set.value ?? '—'}kg`;
+                            const isEditingWeight = editingWeightSetIds?.length === 1 && editingWeightSetIds[0] === set.id;
+
+                            return (
+                                <div
+                                    key={set.id}
+                                    className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
+                                >
+                                    {isEditingWeight ? (
+                                        <div className="flex items-center gap-0.5">
+                                            <input
+                                                ref={weightInputRef}
+                                                type="text"
+                                                inputMode="decimal"
+                                                className="w-12 text-center text-xs bg-transparent border-b border-primary/50 outline-none"
+                                                value={weightDraft}
+                                                onChange={e => setWeightDraft(e.target.value.replace(/[^0-9.]/g, ''))}
+                                                onBlur={commitWeightEdit}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter') commitWeightEdit();
+                                                    if (e.key === 'Escape') setEditingWeightSetIds(null);
+                                                }}
+                                            />
+                                            {!isBodyweight && <span className="text-xs text-muted-foreground">kg</span>}
+                                        </div>
                                     ) : (
-                                        <Input
-                                            key={set.id}
-                                            maxLength={2}
-                                            type="text"
-                                            inputMode="numeric"
-                                            className="w-9 h-9 text-center text-xs bg-transparent border-primary/20"
-                                            value={set.reps || ''}
-                                            onChange={e => handleRepsChange(set.id, e.target.value)}
-                                        />
-                                    )
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+                                        <button
+                                            onClick={() => openWeightEdit([set.id], set.value)}
+                                            disabled={isPending || isBodyweight}
+                                            className="text-xs text-muted-foreground disabled:cursor-default"
+                                        >
+                                            {weightLabel}
+                                        </button>
+                                    )}
+                                    <Button
+                                        onClick={() => handleDeleteSet(set.id)}
+                                        variant="destructive"
+                                        size="icon"
+                                        disabled={isPending}
+                                    >
+                                        <X size={16} />
+                                    </Button>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        // Normal mode: sets grouped by weight
+                        groups.map((group, groupIndex) => {
+                            const isPending = group.some(s => s.id < 0);
+                            const isBodyweight = group[0].unit === 'bodyweight';
+                            const weightLabel = isBodyweight ? 'BW' : `${group[0].value ?? '—'}kg`;
+                            const isEditingGroup = editingWeightSetIds !== null &&
+                                group.every(s => editingWeightSetIds.includes(s.id));
+
+                            return (
+                                <div
+                                    key={groupIndex}
+                                    className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
+                                >
+                                    {isEditingGroup ? (
+                                        <div className="flex items-center gap-0.5">
+                                            <input
+                                                ref={weightInputRef}
+                                                type="text"
+                                                inputMode="decimal"
+                                                className="w-12 text-center text-xs bg-transparent border-b border-primary/50 outline-none"
+                                                value={weightDraft}
+                                                onChange={e => setWeightDraft(e.target.value.replace(/[^0-9.]/g, ''))}
+                                                onBlur={commitWeightEdit}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter') commitWeightEdit();
+                                                    if (e.key === 'Escape') setEditingWeightSetIds(null);
+                                                }}
+                                            />
+                                            {!isBodyweight && <span className="text-xs text-muted-foreground">kg</span>}
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => openWeightEdit(group.map(s => s.id), group[0].value)}
+                                            disabled={isPending || isBodyweight}
+                                            className="text-xs text-muted-foreground disabled:cursor-default"
+                                        >
+                                            {weightLabel}
+                                        </button>
+                                    )}
+                                    <div className="flex gap-1">
+                                        {group.map((set) => (
+                                            <Input
+                                                key={set.id}
+                                                maxLength={2}
+                                                type="text"
+                                                inputMode="numeric"
+                                                className="w-9 h-9 text-center text-xs bg-transparent border-primary/20"
+                                                value={set.reps || ''}
+                                                onChange={e => handleRepsChange(set.id, e.target.value)}
+                                                disabled={set.id < 0}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                     <Button
                         variant="outline"
                         size="icon"
-                        className="mt-7"
+                        className="self-center"
                         onClick={handleAddSet}
                     >
                         <PlusIcon size={16} />
