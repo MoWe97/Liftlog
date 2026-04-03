@@ -11,6 +11,7 @@ from models.tables import (
 from models.schemas import (
     ExerciseCreate,
     ExerciseRead,
+    WorkoutTypeCreate,
     WorkoutSessionCreate,
     WorkoutSessionRead,
     SetCreate,
@@ -30,6 +31,7 @@ __all__ = [
     "Set",
     "ExerciseCreate",
     "ExerciseRead",
+    "WorkoutTypeCreate",
     "WorkoutSessionCreate",
     "WorkoutSessionRead",
     "SetCreate",

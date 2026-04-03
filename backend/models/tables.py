@@ -33,7 +33,7 @@ class ExerciseWorkoutTypeLink(SQLModel, table=True):
 
 class WorkoutType(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: WorkoutTypeName
+    name: str
 
     workout_sessions: list["WorkoutSession"] = Relationship(back_populates="workout_type")
     exercises: list["Exercise"] = Relationship(

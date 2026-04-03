@@ -17,6 +17,12 @@ class ExerciseRead(SQLModel):
     workout_types: list[WorkoutType]
 
 
+# ── WorkoutType ────────────────────────────────────────────────────────────────
+
+class WorkoutTypeCreate(SQLModel):
+    name: str
+
+
 # ── WorkoutSession ─────────────────────────────────────────────────────────────
 
 class WorkoutSessionCreate(SQLModel):
