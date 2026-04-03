@@ -105,7 +105,7 @@ function SessionExerciseCard({ sessionExercise }: Props) {
                     </span>
                 </div>
                 <Separator />
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 overflow-x-auto">
                     {editMode ? (
                         // Edit mode: each set individually with weight above and delete button below
                         sets.map((set) => {
@@ -217,7 +217,7 @@ function SessionExerciseCard({ sessionExercise }: Props) {
                     <Button
                         variant="outline"
                         size="icon"
-                        className="self-center"
+                        className="self-center shrink-0"
                         onClick={handleAddSet}
                     >
                         <PlusIcon size={16} />

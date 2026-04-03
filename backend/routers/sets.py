@@ -24,6 +24,7 @@ def get_session_exercise_sets(session_exercise_id: int, session: Session = Depen
     items = session.exec(
         select(Set)
         .where(Set.session_exercise_id == session_exercise_id)
+        .order_by(Set.id)
     ).all()
     return items
 
