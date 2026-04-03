@@ -2,7 +2,7 @@ import { Item, ItemContent } from "@/components/ui/item.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import type { ExerciseSet, SessionExercise } from "@/types";
 import { Separator } from "@/components/ui/separator.tsx";
-import { Pencil, PlusIcon, X } from "lucide-react";
+import { Pencil, PlusIcon, Trash2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
@@ -11,9 +11,10 @@ import { useDebouncedCallback } from "use-debounce";
 
 interface Props {
     sessionExercise: SessionExercise;
+    onDelete: () => void;
 }
 
-function SessionExerciseCard({ sessionExercise }: Props) {
+function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
     const [editingWeightSetIds, setEditingWeightSetIds] = useState<number[] | null>(null);
@@ -103,6 +104,16 @@ function SessionExerciseCard({ sessionExercise }: Props) {
                     <span className="truncate max-w-[60%] text-center text-sm font-medium">
                         {sessionExercise.exercise.name}
                     </span>
+                    <button
+                        className={cn(
+                            'absolute right-0 transition-colors',
+                            !editMode ? 'text-muted-foreground/30 pointer-events-none' : 'text-destructive',
+                        )}
+                        onClick={onDelete}
+                        disabled={!editMode}
+                    >
+                        <Trash2 size={16} />
+                    </button>
                 </div>
                 <Separator />
                 <div className="flex gap-2 overflow-x-auto">

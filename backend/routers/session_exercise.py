@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
-from models import SessionExercise, SessionExerciseRead
+from models import SessionExercise, SessionExerciseRead, Set
 
 router = APIRouter()
 
@@ -13,6 +13,17 @@ def create_workout_session_exercise(workout_session_id: int, exercise_id: int, s
     session.commit()
     session.refresh(item)
     return item
+
+
+@router.delete("/session-exercises/{session_exercise_id}", status_code=204)
+def delete_session_exercise(session_exercise_id: int, session: Session = Depends(get_session)):
+    item = session.get(SessionExercise, session_exercise_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="SessionExercise not found")
+    for s in session.exec(select(Set).where(Set.session_exercise_id == session_exercise_id)).all():
+        session.delete(s)
+    session.delete(item)
+    session.commit()
 
 
 @router.get("/workout-sessions/{workout_session_id}/exercises", response_model=list[SessionExerciseRead])

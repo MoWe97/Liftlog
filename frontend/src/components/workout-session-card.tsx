@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useSessionStore } from "@/stores/workout-session-store.ts";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
 import { Dumbbell, PlusIcon, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,8 +21,20 @@ interface Props {
 }
 
 function WorkoutSessionCard({ session, exercises }: Props) {
-    const { deleteSession, addSessionExercise } = useSessionStore();
+    const { deleteSession, addSessionExercise, removeSessionExercise } = useSessionStore();
     const { t } = useTranslation();
+    const [pendingDelete, setPendingDelete] = useState(false);
+    const pendingDeleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function handleDeleteClick() {
+        if (pendingDelete) {
+            if (pendingDeleteTimer.current) clearTimeout(pendingDeleteTimer.current);
+            deleteSession(session.id);
+        } else {
+            setPendingDelete(true);
+            pendingDeleteTimer.current = setTimeout(() => setPendingDelete(false), 2000);
+        }
+    }
 
     const sessionExercises = exercises.filter(
         e => e.workout_types.some(({ id }) => id === session.workout_type_id)
@@ -34,8 +47,11 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => deleteSession(session.id)}
+                    className={pendingDelete
+                        ? "text-destructive hover:text-destructive hover:bg-destructive/10"
+                        : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    }
+                    onClick={handleDeleteClick}
                 >
                     <Trash2 size={16} />
                 </Button>
@@ -67,7 +83,11 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                     </Empty>
                 ) : (
                     session.session_exercises.map((sessionExercise) => (
-                        <SessionExerciseCard key={sessionExercise.id} sessionExercise={sessionExercise} />
+                        <SessionExerciseCard
+                            key={sessionExercise.id}
+                            sessionExercise={sessionExercise}
+                            onDelete={() => removeSessionExercise(session.id, sessionExercise.id)}
+                        />
                     ))
                 )}
                 <DropdownMenu>

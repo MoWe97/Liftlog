@@ -4,6 +4,7 @@ import {
     getWorkoutSessions,
     addWorkoutSession,
     deleteWorkoutSession,
+    deleteSessionExercise,
     addExerciseToSession,
     getWorkoutSessionById,
 } from "@/api/workoutSessions";
@@ -14,6 +15,7 @@ interface SessionStore {
     addSession: (date: string, workoutTypeId: number) => Promise<void>;
     deleteSession: (id: number) => Promise<void>;
     addSessionExercise: (workout_session_id: number, exercise_id: number) => Promise<void>;
+    removeSessionExercise: (sessionId: number, sessionExerciseId: number) => Promise<void>;
 }
 
 export const useSessionStore = create<SessionStore>((set) => ({
@@ -43,5 +45,17 @@ export const useSessionStore = create<SessionStore>((set) => ({
                 ex.id === updatedSession.id ? updatedSession : ex
             )
         }))
+    },
+
+    removeSessionExercise: async (sessionId: number, sessionExerciseId: number) => {
+        await deleteSessionExercise(sessionExerciseId);
+        set(state => ({
+            sessions: state.sessions.map(s =>
+                s.id !== sessionId ? s : {
+                    ...s,
+                    session_exercises: s.session_exercises.filter(se => se.id !== sessionExerciseId),
+                }
+            ),
+        }));
     },
 }));
