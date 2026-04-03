@@ -2,18 +2,13 @@ import type { Exercise, WorkoutSession } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button.tsx";
 import { useSessionStore } from "@/stores/workout-session-store.ts";
+import { useExerciseStore } from "@/stores/exercises-store.ts";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
-import { Dumbbell, PlusIcon, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
+import { Dumbbell, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import SessionExerciseCard from "@/components/session-exercise-card.tsx";
+import AddExerciseDialog from "@/components/add-exercise-dialog.tsx";
+import { useRef, useState } from "react";
 
 interface Props {
     session: WorkoutSession;
@@ -22,9 +17,14 @@ interface Props {
 
 function WorkoutSessionCard({ session, exercises }: Props) {
     const { deleteSession, addSessionExercise, removeSessionExercise } = useSessionStore();
+    const { createExercise } = useExerciseStore();
     const { t } = useTranslation();
     const [pendingDelete, setPendingDelete] = useState(false);
     const pendingDeleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const sessionExercises = exercises.filter(
+        e => e.workout_types.some(({ id }) => id === session.workout_type_id)
+    );
 
     function handleDeleteClick() {
         if (pendingDelete) {
@@ -36,9 +36,10 @@ function WorkoutSessionCard({ session, exercises }: Props) {
         }
     }
 
-    const sessionExercises = exercises.filter(
-        e => e.workout_types.some(({ id }) => id === session.workout_type_id)
-    );
+    async function handleCreateAndSelect(name: string) {
+        const exercise = await createExercise(name, session.workout_type_id ? [session.workout_type_id] : []);
+        await addSessionExercise(session.id, exercise.id);
+    }
 
     return (
         <Card>
@@ -56,7 +57,7 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                     <Trash2 size={16} />
                 </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col gap-3">
                 {session.session_exercises.length === 0 ? (
                     <Empty>
                         <EmptyHeader>
@@ -67,44 +68,29 @@ function WorkoutSessionCard({ session, exercises }: Props) {
                         </EmptyHeader>
                         <EmptyContent className="flex-row justify-center gap-2">
                             <Button variant="secondary">{t("workout_session_card.copy_from_last_session")}</Button>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button>{t("workout_session_card.add_exercise")}</Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    {sessionExercises.map((exercise) => (
-                                        <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>
-                                            {exercise.name}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <AddExerciseDialog
+                                exercises={sessionExercises}
+                                onSelect={(id) => addSessionExercise(session.id, id)}
+                                onCreateAndSelect={handleCreateAndSelect}
+                            />
                         </EmptyContent>
                     </Empty>
                 ) : (
-                    session.session_exercises.map((sessionExercise) => (
-                        <SessionExerciseCard
-                            key={sessionExercise.id}
-                            sessionExercise={sessionExercise}
-                            onDelete={() => removeSessionExercise(session.id, sessionExercise.id)}
-                        />
-                    ))
-                )}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="default" size="icon" className="p-2">
-                            <PlusIcon size={16} />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>Add Exercise</DropdownMenuLabel>
-                        {sessionExercises.map((exercise) => (
-                            <DropdownMenuItem key={exercise.id} onClick={() => addSessionExercise(session.id, exercise.id)}>
-                                {exercise.name}
-                            </DropdownMenuItem>
+                    <>
+                        {session.session_exercises.map((sessionExercise) => (
+                            <SessionExerciseCard
+                                key={sessionExercise.id}
+                                sessionExercise={sessionExercise}
+                                onDelete={() => removeSessionExercise(session.id, sessionExercise.id)}
+                            />
                         ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <AddExerciseDialog
+                            exercises={sessionExercises}
+                            onSelect={(id) => addSessionExercise(session.id, id)}
+                            onCreateAndSelect={handleCreateAndSelect}
+                        />
+                    </>
+                )}
             </CardContent>
         </Card>
     );

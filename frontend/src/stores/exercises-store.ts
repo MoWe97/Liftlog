@@ -1,11 +1,11 @@
 import { create } from "zustand";
-import type {Exercise} from "@/types";
-import {addExercise, deleteExercise, getExercises} from "@/api/exercises.ts";
+import type { Exercise } from "@/types";
+import { createExercise, deleteExercise, getExercises } from "@/api/exercises.ts";
 
 interface ExerciseStore {
     exercises: Exercise[];
     fetchExercises: () => Promise<void>;
-    addExercise: (workout_type_id: number) => Promise<void>;
+    createExercise: (name: string, workoutTypeIds: number[]) => Promise<Exercise>;
     deleteExercise: (id: number) => Promise<void>;
 }
 
@@ -17,10 +17,10 @@ export const useExerciseStore = create<ExerciseStore>((set) => ({
         set({ exercises: data });
     },
 
-    addExercise: async ( workout_type_id: number) => {
-        await addExercise(workout_type_id);
-        const data = await getExercises();
-        set({ exercises: data });
+    createExercise: async (name: string, workoutTypeIds: number[]) => {
+        const exercise = await createExercise(name, workoutTypeIds);
+        set(state => ({ exercises: [...state.exercises, exercise] }));
+        return exercise;
     },
 
     deleteExercise: async (id) => {

@@ -6,8 +6,8 @@ export const getExercises = async (): Promise<Exercise[]> => {
     return response.data;
 };
 
-export const addExercise = async (workout_type_id: number): Promise<Exercise> => {
-    const response = await client.post("/exercises", { workout_type_id });
+export const createExercise = async (name: string, workout_types_ids: number[]): Promise<Exercise> => {
+    const response = await client.post("/exercises", { name, workout_types_ids });
     return response.data;
 };
 
