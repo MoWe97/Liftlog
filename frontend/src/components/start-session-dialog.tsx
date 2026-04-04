@@ -2,44 +2,37 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { WorkoutType } from "@/types";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 interface Props {
     workoutTypes: WorkoutType[];
-    onSelect: (workoutType: WorkoutType) => void;
-    onCreateAndSelect: (name: string) => Promise<void>;
+    onStart: (name?: string, templateId?: number) => void;
 }
 
-function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props) {
+function StartSessionDialog({ workoutTypes, onStart }: Props) {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
-    const [search, setSearch] = useState("");
+    const [name, setName] = useState("");
 
-    const filtered = workoutTypes.filter(wt =>
-        wt.name.toLowerCase().includes(search.toLowerCase())
-    );
-    const exactMatch = workoutTypes.some(wt =>
-        wt.name.toLowerCase() === search.trim().toLowerCase()
-    );
-    const showCreate = search.trim().length > 0 && !exactMatch;
-
-    function handleSelect(workoutType: WorkoutType) {
-        onSelect(workoutType);
-        setOpen(false);
-        setSearch("");
+    function handleTemplate(wt: WorkoutType) {
+        onStart(wt.name, wt.id);
+        close();
     }
 
-    async function handleCreate() {
-        await onCreateAndSelect(search.trim());
+    function handleBlank() {
+        onStart(name.trim() || undefined);
+        close();
+    }
+
+    function close() {
         setOpen(false);
-        setSearch("");
+        setName("");
     }
 
     return (
-        <DialogPrimitive.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
+        <DialogPrimitive.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setName(""); }}>
             <DialogPrimitive.Trigger asChild>
                 <Button>{t("start_session_dialog.trigger")}</Button>
             </DialogPrimitive.Trigger>
@@ -56,39 +49,37 @@ function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props
                             </button>
                         </DialogPrimitive.Close>
                     </div>
+
+                    {/* Optional custom name */}
                     <Input
-                        placeholder={t("start_session_dialog.search_placeholder")}
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        placeholder={t("start_session_dialog.name_placeholder")}
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") handleBlank(); }}
                         autoFocus
                     />
-                    <div className="flex flex-col max-h-60 overflow-y-auto -mx-1">
-                        {filtered.map(wt => (
-                            <button
-                                key={wt.id}
-                                className={cn(
-                                    "text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors"
-                                )}
-                                onClick={() => handleSelect(wt)}
-                            >
-                                {wt.name}
-                            </button>
-                        ))}
-                        {filtered.length === 0 && !showCreate && (
-                            <p className="text-sm text-muted-foreground text-center py-3">
-                                {t("start_session_dialog.no_workout_types")}
-                            </p>
-                        )}
-                        {showCreate && (
-                            <button
-                                className="text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors text-primary flex items-center gap-1.5"
-                                onClick={handleCreate}
-                            >
-                                <PlusIcon size={14} className="shrink-0" />
-                                {t("start_session_dialog.create", { name: search.trim() })}
-                            </button>
-                        )}
-                    </div>
+
+                    {/* Templates */}
+                    {workoutTypes.length > 0 && (
+                        <div className="flex flex-col gap-1">
+                            <p className="text-xs text-muted-foreground">{t("start_session_dialog.from_template")}</p>
+                            <div className="flex flex-col max-h-48 overflow-y-auto -mx-1">
+                                {workoutTypes.map(wt => (
+                                    <button
+                                        key={wt.id}
+                                        className="text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors"
+                                        onClick={() => handleTemplate(wt)}
+                                    >
+                                        {wt.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <Button variant="outline" onClick={handleBlank}>
+                        {t("start_session_dialog.blank")}
+                    </Button>
                 </DialogPrimitive.Content>
             </DialogPrimitive.Portal>
         </DialogPrimitive.Root>

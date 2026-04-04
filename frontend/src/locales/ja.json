@@ -45,8 +45,8 @@
   "start_session_dialog": {
     "trigger": "新しいセッション",
     "title": "新しいセッション",
-    "search_placeholder": "検索または作成...",
-    "no_workout_types": "トレーニング種類が見つかりません",
-    "create": "「{{name}}」を作成"
+    "name_placeholder": "セッション名（任意）...",
+    "from_template": "テンプレートから",
+    "blank": "空のセッション"
   }
 }

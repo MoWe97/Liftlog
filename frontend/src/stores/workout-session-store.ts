@@ -12,7 +12,7 @@ import {
 interface SessionStore {
     sessions: WorkoutSession[];
     fetchSessions: (date: string) => Promise<void>;
-    addSession: (date: string, workoutTypeId: number) => Promise<void>;
+    addSession: (date: string, name?: string, templateId?: number) => Promise<void>;
     deleteSession: (id: number) => Promise<void>;
     addSessionExercise: (workout_session_id: number, exercise_id: number) => Promise<void>;
     removeSessionExercise: (sessionId: number, sessionExerciseId: number) => Promise<void>;
@@ -26,8 +26,8 @@ export const useSessionStore = create<SessionStore>((set) => ({
         set({ sessions: data });
     },
 
-    addSession: async (date, workoutTypeId) => {
-        await addWorkoutSession(date, workoutTypeId);
+    addSession: async (date, name, templateId) => {
+        await addWorkoutSession(date, name, templateId);
         const data = await getWorkoutSessions(date);
         set({ sessions: data });
     },

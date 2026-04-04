@@ -16,7 +16,6 @@ class WorkoutType(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
 
-    workout_sessions: list["WorkoutSession"] = Relationship(back_populates="workout_type")
     exercises: list["Exercise"] = Relationship(
         back_populates="workout_types", link_model=ExerciseWorkoutTypeLink
     )
@@ -35,9 +34,8 @@ class Exercise(SQLModel, table=True):
 class WorkoutSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     date: date
-    workout_type_id: Optional[int] = Field(default=None, foreign_key="workouttype.id")
+    name: Optional[str] = None
 
-    workout_type: Optional[WorkoutType] = Relationship(back_populates="workout_sessions")
     session_exercises: list["SessionExercise"] = Relationship(back_populates="workout_session")
 
 

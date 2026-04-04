@@ -45,8 +45,8 @@
   "start_session_dialog": {
     "trigger": "Neue Einheit",
     "title": "Neue Einheit",
-    "search_placeholder": "Suchen oder erstellen...",
-    "no_workout_types": "Keine Trainingsarten gefunden",
-    "create": "\"{{name}}\" erstellen"
+    "name_placeholder": "Einheitenname (optional)...",
+    "from_template": "Aus Vorlage",
+    "blank": "Leere Einheit"
   }
 }

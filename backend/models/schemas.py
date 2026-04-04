@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel
 from typing import Optional
 from datetime import date
-from models.tables import WorkoutType
+from models.tables import WorkoutType  # used in ExerciseRead
 
 
 # ── Exercise ───────────────────────────────────────────────────────────────────
@@ -36,7 +36,8 @@ class WorkoutTypeUpdate(SQLModel):
 
 class WorkoutSessionCreate(SQLModel):
     date: date
-    workout_type_id: int
+    name: Optional[str] = None
+    template_id: Optional[int] = None
 
 
 # ── Set ────────────────────────────────────────────────────────────────────────
@@ -78,6 +79,5 @@ class SessionExerciseRead(SQLModel):
 class WorkoutSessionRead(SQLModel):
     id: int
     date: date
-    workout_type_id: Optional[int]
-    workout_type: Optional[WorkoutType] = None
+    name: Optional[str] = None
     session_exercises: list[SessionExerciseRead]

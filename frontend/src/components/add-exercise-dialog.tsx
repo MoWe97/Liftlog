@@ -4,28 +4,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, X } from "lucide-react";
 import type { Exercise } from "@/types";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useExerciseStore } from "@/stores/exercises-store";
 
 interface Props {
     exercises: Exercise[];
     onSelect: (exerciseId: number) => void;
-    onCreateAndSelect: (name: string) => Promise<void>;
     trigger?: React.ReactNode;
 }
 
-function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: Props) {
+function AddExerciseDialog({ exercises, onSelect, trigger }: Props) {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const [creating, setCreating] = useState(false);
+    const createExercise = useExerciseStore(s => s.createExercise);
 
+    const trimmed = search.trim();
     const filtered = exercises.filter(e =>
         e.name.toLowerCase().includes(search.toLowerCase())
     );
-    const exactMatch = exercises.some(e =>
-        e.name.toLowerCase() === search.trim().toLowerCase()
-    );
-    const showCreate = search.trim().length > 0 && !exactMatch;
+    const exactMatch = exercises.some(e => e.name.toLowerCase() === trimmed.toLowerCase());
+    const showCreate = trimmed.length > 0 && !exactMatch;
 
     function handleSelect(id: number) {
         onSelect(id);
@@ -34,9 +34,16 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
     }
 
     async function handleCreate() {
-        await onCreateAndSelect(search.trim());
-        setOpen(false);
-        setSearch("");
+        if (!trimmed) return;
+        setCreating(true);
+        try {
+            const exercise = await createExercise(trimmed, []);
+            onSelect(exercise.id);
+            setOpen(false);
+            setSearch("");
+        } finally {
+            setCreating(false);
+        }
     }
 
     return (
@@ -72,9 +79,7 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                         {filtered.map(exercise => (
                             <button
                                 key={exercise.id}
-                                className={cn(
-                                    "text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors"
-                                )}
+                                className="text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors"
                                 onClick={() => handleSelect(exercise.id)}
                             >
                                 {exercise.name}
@@ -87,11 +92,11 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                         )}
                         {showCreate && (
                             <button
-                                className="text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors text-primary flex items-center gap-1.5"
+                                className="text-left text-sm px-3 py-1.5 rounded mx-1 hover:bg-muted transition-colors text-muted-foreground disabled:opacity-50"
                                 onClick={handleCreate}
+                                disabled={creating}
                             >
-                                <PlusIcon size={14} className="shrink-0" />
-                                {t("add_exercise_dialog.create", { name: search.trim() })}
+                                {t("add_exercise_dialog.create", { name: trimmed })}
                             </button>
                         )}
                     </div>

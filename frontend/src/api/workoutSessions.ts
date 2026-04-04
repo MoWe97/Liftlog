@@ -12,8 +12,8 @@ export const getWorkoutSessionById = async (workout_session_id: number): Promise
     return response.data;
 };
 
-export const addWorkoutSession = async (date: string, workout_type_id: number): Promise<WorkoutSession> => {
-    const response = await client.post("/workout-sessions", { date, workout_type_id });
+export const addWorkoutSession = async (date: string, name?: string, template_id?: number): Promise<WorkoutSession> => {
+    const response = await client.post("/workout-sessions", { date, name, template_id });
     return response.data;
 };
 

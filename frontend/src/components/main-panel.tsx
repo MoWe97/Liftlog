@@ -1,4 +1,3 @@
-import type { WorkoutType } from "@/types";
 import WorkoutSessionCard from "@/components/workout-session-card.tsx";
 import { useTranslation } from "react-i18next";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
@@ -18,7 +17,7 @@ interface Props {
 function MainPanel({ selectedDate, onDateChange }: Props) {
     const { t } = useTranslation();
     const { sessions, addSession, fetchSessions } = useSessionStore();
-    const { workoutTypes, fetchWorkoutTypes, createWorkoutType } = useWorkoutTypesStore();
+    const { workoutTypes, fetchWorkoutTypes } = useWorkoutTypesStore();
     const { exercises, fetchExercises } = useExerciseStore();
 
     useEffect(() => {
@@ -30,14 +29,16 @@ function MainPanel({ selectedDate, onDateChange }: Props) {
 
     const dateStr = selectedDate.toLocaleDateString("en-CA");
 
-    async function handleCreateAndSelect(name: string) {
-        const workoutType = await createWorkoutType(name);
-        await addSession(dateStr, workoutType.id);
+    function handleStart(name?: string, templateId?: number) {
+        addSession(dateStr, name, templateId);
     }
 
-    function handleSelect(workoutType: WorkoutType) {
-        addSession(dateStr, workoutType.id);
-    }
+    const dialog = (
+        <StartSessionDialog
+            workoutTypes={workoutTypes}
+            onStart={handleStart}
+        />
+    );
 
     return (
         <>
@@ -49,22 +50,14 @@ function MainPanel({ selectedDate, onDateChange }: Props) {
                         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-4">
                             <span className="text-4xl">🏋️</span>
                             <span className="text-sm">{t("main_panel.no_sessions_recorded")}</span>
-                            <StartSessionDialog
-                                workoutTypes={workoutTypes}
-                                onSelect={handleSelect}
-                                onCreateAndSelect={handleCreateAndSelect}
-                            />
+                            {dialog}
                         </div>
                     ) : (
                         <>
                             {sessions.map(session => (
                                 <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
                             ))}
-                            <StartSessionDialog
-                                workoutTypes={workoutTypes}
-                                onSelect={handleSelect}
-                                onCreateAndSelect={handleCreateAndSelect}
-                            />
+                            {dialog}
                         </>
                     )}
                 </div>
@@ -83,24 +76,14 @@ function MainPanel({ selectedDate, onDateChange }: Props) {
                                 <EmptyTitle>{t("main_panel.no_workout_session1")}</EmptyTitle>
                                 <EmptyDescription>{t("main_panel.no_workout_session2")}</EmptyDescription>
                             </EmptyHeader>
-                            <EmptyContent>
-                                <StartSessionDialog
-                                    workoutTypes={workoutTypes}
-                                    onSelect={handleSelect}
-                                    onCreateAndSelect={handleCreateAndSelect}
-                                />
-                            </EmptyContent>
+                            <EmptyContent>{dialog}</EmptyContent>
                         </Empty>
                     ) : (
                         <>
                             {sessions.map(session => (
                                 <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
                             ))}
-                            <StartSessionDialog
-                                workoutTypes={workoutTypes}
-                                onSelect={handleSelect}
-                                onCreateAndSelect={handleCreateAndSelect}
-                            />
+                            {dialog}
                         </>
                     )}
                 </div>

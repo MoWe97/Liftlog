@@ -30,7 +30,6 @@ export interface SessionExercise {
 export interface WorkoutSession {
     id: number;
     date: string;
-    workout_type_id?: number;
-    workout_type?: WorkoutType;
+    name?: string;
     session_exercises: SessionExercise[];
 }

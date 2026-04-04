@@ -45,8 +45,8 @@
   "start_session_dialog": {
     "trigger": "New session",
     "title": "New Session",
-    "search_placeholder": "Search or create...",
-    "no_workout_types": "No workout types found",
-    "create": "Create \"{{name}}\""
+    "name_placeholder": "Session name (optional)...",
+    "from_template": "From template",
+    "blank": "Blank session"
   }
 }
