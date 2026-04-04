@@ -8,13 +8,15 @@ import { useEffect } from "react";
 import { useWorkoutTypesStore } from "@/stores/workout-types-store.ts";
 import { useExerciseStore } from "@/stores/exercises-store.ts";
 import StartSessionDialog from "@/components/start-session-dialog.tsx";
+import DateNavigator from "@/components/date-navigator.tsx";
 
 interface Props {
     selectedDate: Date;
+    onDateChange: (date: Date) => void;
 }
 
-function MainPanel({ selectedDate }: Props) {
-    const { t, i18n } = useTranslation();
+function MainPanel({ selectedDate, onDateChange }: Props) {
+    const { t } = useTranslation();
     const { sessions, addSession, fetchSessions } = useSessionStore();
     const { workoutTypes, fetchWorkoutTypes, createWorkoutType } = useWorkoutTypesStore();
     const { exercises, fetchExercises } = useExerciseStore();
@@ -41,9 +43,7 @@ function MainPanel({ selectedDate }: Props) {
         <>
             {/* Desktop */}
             <div className="hidden md:flex flex-1 p-6 flex-col gap-4">
-                <h2 className="text-2xl font-bold tracking-tight text-center">
-                    {selectedDate.toLocaleDateString(i18n.language, { weekday: "long", month: "long", day: "numeric" })}
-                </h2>
+                <DateNavigator selectedDate={selectedDate} onDateChange={onDateChange} />
                 <div className="flex flex-col gap-3">
                     {sessions.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-4">
@@ -72,9 +72,7 @@ function MainPanel({ selectedDate }: Props) {
 
             {/* Mobile */}
             <div className="flex md:hidden flex-1 p-2 flex-col gap-4">
-                <h3 className="text-xl font-bold tracking-tight text-center">
-                    {selectedDate.toLocaleDateString(i18n.language, { month: "long", day: "numeric", year: "numeric" })}
-                </h3>
+                <DateNavigator selectedDate={selectedDate} onDateChange={onDateChange} />
                 <div className="flex flex-col gap-3 px-6">
                     {sessions.length === 0 ? (
                         <Empty className="bg-muted/30">

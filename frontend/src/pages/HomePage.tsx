@@ -13,7 +13,7 @@ function HomePage() {
                 <div className="flex flex-row flex-1 pt-6">
                     <Sidebar selectedDate={selectedDate} onDateChange={setSelectedDate} />
                     <div className="flex-1">
-                        <MainPanel selectedDate={selectedDate} />
+                        <MainPanel selectedDate={selectedDate} onDateChange={setSelectedDate} />
                     </div>
                     <div className="w-64">right</div>
                 </div>
@@ -22,7 +22,7 @@ function HomePage() {
             <div className="flex md:hidden flex-col w-full min-h-screen">
                 <Navbar />
                 <div className="flex flex-col flex-1 pt-6 pb-16">
-                    <MainPanel selectedDate={selectedDate} />
+                    <MainPanel selectedDate={selectedDate} onDateChange={setSelectedDate} />
                 </div>
                 {/* bottom nav goes here */}
             </div>
