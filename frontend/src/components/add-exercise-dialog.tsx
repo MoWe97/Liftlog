@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon, X } from "lucide-react";
 import type { Exercise } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     exercises: Exercise[];
@@ -14,6 +15,7 @@ interface Props {
 }
 
 function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: Props) {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
@@ -43,7 +45,7 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                 {trigger ?? (
                     <Button variant="outline" size="sm" className="gap-1.5">
                         <PlusIcon size={14} />
-                        Add exercise
+                        {t("add_exercise_dialog.trigger")}
                     </Button>
                 )}
             </DialogPrimitive.Trigger>
@@ -51,7 +53,9 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                 <DialogPrimitive.Overlay className="fixed inset-0 bg-black/50 z-40" />
                 <DialogPrimitive.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-background border rounded-lg shadow-lg w-80 p-4 flex flex-col gap-3 focus:outline-none">
                     <div className="flex items-center justify-between">
-                        <DialogPrimitive.Title className="text-sm font-semibold">Add Exercise</DialogPrimitive.Title>
+                        <DialogPrimitive.Title className="text-sm font-semibold">
+                            {t("add_exercise_dialog.title")}
+                        </DialogPrimitive.Title>
                         <DialogPrimitive.Close asChild>
                             <button className="text-muted-foreground hover:text-foreground">
                                 <X size={16} />
@@ -59,7 +63,7 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                         </DialogPrimitive.Close>
                     </div>
                     <Input
-                        placeholder="Search or create..."
+                        placeholder={t("add_exercise_dialog.search_placeholder")}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         autoFocus
@@ -77,7 +81,9 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                             </button>
                         ))}
                         {filtered.length === 0 && !showCreate && (
-                            <p className="text-sm text-muted-foreground text-center py-3">No exercises found</p>
+                            <p className="text-sm text-muted-foreground text-center py-3">
+                                {t("add_exercise_dialog.no_exercises")}
+                            </p>
                         )}
                         {showCreate && (
                             <button
@@ -85,7 +91,7 @@ function AddExerciseDialog({ exercises, onSelect, onCreateAndSelect, trigger }: 
                                 onClick={handleCreate}
                             >
                                 <PlusIcon size={14} className="shrink-0" />
-                                Create "{search.trim()}"
+                                {t("add_exercise_dialog.create", { name: search.trim() })}
                             </button>
                         )}
                     </div>

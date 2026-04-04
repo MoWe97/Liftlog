@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon, X } from "lucide-react";
 import type { WorkoutType } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     workoutTypes: WorkoutType[];
@@ -13,6 +14,7 @@ interface Props {
 }
 
 function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props) {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
@@ -39,13 +41,15 @@ function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props
     return (
         <DialogPrimitive.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
             <DialogPrimitive.Trigger asChild>
-                <Button>New session</Button>
+                <Button>{t("start_session_dialog.trigger")}</Button>
             </DialogPrimitive.Trigger>
             <DialogPrimitive.Portal>
                 <DialogPrimitive.Overlay className="fixed inset-0 bg-black/50 z-40" />
                 <DialogPrimitive.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-background border rounded-lg shadow-lg w-80 p-4 flex flex-col gap-3 focus:outline-none">
                     <div className="flex items-center justify-between">
-                        <DialogPrimitive.Title className="text-sm font-semibold">New Session</DialogPrimitive.Title>
+                        <DialogPrimitive.Title className="text-sm font-semibold">
+                            {t("start_session_dialog.title")}
+                        </DialogPrimitive.Title>
                         <DialogPrimitive.Close asChild>
                             <button className="text-muted-foreground hover:text-foreground">
                                 <X size={16} />
@@ -53,7 +57,7 @@ function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props
                         </DialogPrimitive.Close>
                     </div>
                     <Input
-                        placeholder="Search or create..."
+                        placeholder={t("start_session_dialog.search_placeholder")}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         autoFocus
@@ -71,7 +75,9 @@ function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props
                             </button>
                         ))}
                         {filtered.length === 0 && !showCreate && (
-                            <p className="text-sm text-muted-foreground text-center py-3">No workout types found</p>
+                            <p className="text-sm text-muted-foreground text-center py-3">
+                                {t("start_session_dialog.no_workout_types")}
+                            </p>
                         )}
                         {showCreate && (
                             <button
@@ -79,7 +85,7 @@ function StartSessionDialog({ workoutTypes, onSelect, onCreateAndSelect }: Props
                                 onClick={handleCreate}
                             >
                                 <PlusIcon size={14} className="shrink-0" />
-                                Create "{search.trim()}"
+                                {t("start_session_dialog.create", { name: search.trim() })}
                             </button>
                         )}
                     </div>

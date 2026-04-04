@@ -3,7 +3,8 @@
     "new_session_button": "New Session",
     "no_workout_session1": "No recorded sessions for this day",
     "no_workout_session2": "Lets start one!",
-    "select_workout_type": "What are you training today?"
+    "select_workout_type": "What are you training today?",
+    "no_sessions_recorded": "No sessions recorded"
   },
   "navbar": {
     "lang_select": "Select a language"
@@ -11,6 +12,20 @@
   "workout_session_card": {
     "add_exercise": "Add exercise",
     "copy_from_last_session": "Copy from last session",
-    "no_exercises": "No exercise"
+    "no_exercises": "No exercises yet"
+  },
+  "add_exercise_dialog": {
+    "trigger": "Add exercise",
+    "title": "Add Exercise",
+    "search_placeholder": "Search or create...",
+    "no_exercises": "No exercises found",
+    "create": "Create \"{{name}}\""
+  },
+  "start_session_dialog": {
+    "trigger": "New session",
+    "title": "New Session",
+    "search_placeholder": "Search or create...",
+    "no_workout_types": "No workout types found",
+    "create": "Create \"{{name}}\""
   }
 }

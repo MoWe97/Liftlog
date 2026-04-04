@@ -2,9 +2,30 @@
   "main_panel": {
     "new_session_button": "新しいセッション",
     "no_workout_session1": "この日のセッションはありません",
-    "no_workout_session2": "始めましょう！"
+    "no_workout_session2": "始めましょう！",
+    "select_workout_type": "今日は何をトレーニングしますか？",
+    "no_sessions_recorded": "記録されたセッションはありません"
   },
   "navbar": {
     "lang_select": "言語を選択"
+  },
+  "workout_session_card": {
+    "add_exercise": "種目を追加",
+    "copy_from_last_session": "前回のセッションをコピー",
+    "no_exercises": "まだ種目がありません"
+  },
+  "add_exercise_dialog": {
+    "trigger": "種目を追加",
+    "title": "種目を追加",
+    "search_placeholder": "検索または作成...",
+    "no_exercises": "種目が見つかりません",
+    "create": "「{{name}}」を作成"
+  },
+  "start_session_dialog": {
+    "trigger": "新しいセッション",
+    "title": "新しいセッション",
+    "search_placeholder": "検索または作成...",
+    "no_workout_types": "トレーニング種類が見つかりません",
+    "create": "「{{name}}」を作成"
   }
 }

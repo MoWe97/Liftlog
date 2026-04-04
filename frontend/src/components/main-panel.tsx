@@ -48,7 +48,7 @@ function MainPanel({ selectedDate }: Props) {
                     {sessions.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-4">
                             <span className="text-4xl">🏋️</span>
-                            <span className="text-sm">No sessions recorded</span>
+                            <span className="text-sm">{t("main_panel.no_sessions_recorded")}</span>
                             <StartSessionDialog
                                 workoutTypes={workoutTypes}
                                 onSelect={handleSelect}

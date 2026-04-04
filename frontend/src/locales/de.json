@@ -2,9 +2,30 @@
   "main_panel": {
     "new_session_button": "Neue Einheit",
     "no_workout_session1": "Keine Einheiten für diesen Tag",
-    "no_workout_session2": "Lass uns eine starten!"
+    "no_workout_session2": "Lass uns eine starten!",
+    "select_workout_type": "Was trainierst du heute?",
+    "no_sessions_recorded": "Keine Einheiten aufgezeichnet"
   },
   "navbar": {
     "lang_select": "Wähle eine Sprache"
+  },
+  "workout_session_card": {
+    "add_exercise": "Übung hinzufügen",
+    "copy_from_last_session": "Letzte Einheit kopieren",
+    "no_exercises": "Noch keine Übungen"
+  },
+  "add_exercise_dialog": {
+    "trigger": "Übung hinzufügen",
+    "title": "Übung hinzufügen",
+    "search_placeholder": "Suchen oder erstellen...",
+    "no_exercises": "Keine Übungen gefunden",
+    "create": "\"{{name}}\" erstellen"
+  },
+  "start_session_dialog": {
+    "trigger": "Neue Einheit",
+    "title": "Neue Einheit",
+    "search_placeholder": "Suchen oder erstellen...",
+    "no_workout_types": "Keine Trainingsarten gefunden",
+    "create": "\"{{name}}\" erstellen"
   }
 }
