@@ -1,4 +1,4 @@
-type ResistanceUnit = "kg" | "lbs" | "bodyweight"
+type ResistanceUnit = "kg" | "lbs"
 
 export interface WorkoutType {
     id: number;

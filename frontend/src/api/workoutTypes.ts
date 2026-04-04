@@ -10,3 +10,12 @@ export const createWorkoutType = async (name: string): Promise<WorkoutType> => {
     const response = await client.post("/workout-types", { name });
     return response.data;
 };
+
+export const renameWorkoutType = async (id: number, name: string): Promise<WorkoutType> => {
+    const response = await client.patch(`/workout-types/${id}`, { name });
+    return response.data;
+};
+
+export const deleteWorkoutType = async (id: number): Promise<void> => {
+    await client.delete(`/workout-types/${id}`);
+};

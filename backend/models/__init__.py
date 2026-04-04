@@ -1,6 +1,4 @@
 from models.tables import (
-    WorkoutTypeName,
-    ResistanceUnit,
     ExerciseWorkoutTypeLink,
     WorkoutType,
     Exercise,
@@ -10,8 +8,10 @@ from models.tables import (
 )
 from models.schemas import (
     ExerciseCreate,
+    ExerciseUpdate,
     ExerciseRead,
     WorkoutTypeCreate,
+    WorkoutTypeUpdate,
     WorkoutSessionCreate,
     WorkoutSessionRead,
     SetCreate,
@@ -21,8 +21,6 @@ from models.schemas import (
 )
 
 __all__ = [
-    "WorkoutTypeName",
-    "ResistanceUnit",
     "ExerciseWorkoutTypeLink",
     "WorkoutType",
     "Exercise",
@@ -30,8 +28,10 @@ __all__ = [
     "SessionExercise",
     "Set",
     "ExerciseCreate",
+    "ExerciseUpdate",
     "ExerciseRead",
     "WorkoutTypeCreate",
+    "WorkoutTypeUpdate",
     "WorkoutSessionCreate",
     "WorkoutSessionRead",
     "SetCreate",

@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
-from models import WorkoutType, WorkoutTypeCreate
+from models import WorkoutType, WorkoutTypeCreate, WorkoutTypeUpdate
 
 router = APIRouter()
 
@@ -19,3 +19,24 @@ def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depe
     session.commit()
     session.refresh(item)
     return item
+
+
+@router.patch("/workout-types/{workout_type_id}", response_model=WorkoutType)
+def update_workout_type(workout_type_id: int, update: WorkoutTypeUpdate, session: Session = Depends(get_session)):
+    item = session.get(WorkoutType, workout_type_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="WorkoutType not found")
+    item.name = update.name
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+
+@router.delete("/workout-types/{workout_type_id}", status_code=204)
+def delete_workout_type(workout_type_id: int, session: Session = Depends(get_session)):
+    item = session.get(WorkoutType, workout_type_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="WorkoutType not found")
+    session.delete(item)
+    session.commit()

@@ -1,12 +1,17 @@
 from sqlmodel import SQLModel
 from typing import Optional
 from datetime import date
-from models.tables import WorkoutType, ResistanceUnit
+from models.tables import WorkoutType
 
 
 # ── Exercise ───────────────────────────────────────────────────────────────────
 
 class ExerciseCreate(SQLModel):
+    name: str
+    workout_types_ids: list[int]
+
+
+class ExerciseUpdate(SQLModel):
     name: str
     workout_types_ids: list[int]
 
@@ -23,6 +28,10 @@ class WorkoutTypeCreate(SQLModel):
     name: str
 
 
+class WorkoutTypeUpdate(SQLModel):
+    name: str
+
+
 # ── WorkoutSession ─────────────────────────────────────────────────────────────
 
 class WorkoutSessionCreate(SQLModel):
@@ -33,7 +42,7 @@ class WorkoutSessionCreate(SQLModel):
 # ── Set ────────────────────────────────────────────────────────────────────────
 
 class SetCreate(SQLModel):
-    unit: ResistanceUnit
+    unit: str = "kg"
     value: Optional[float] = None
     reps: Optional[int] = None
     duration_seconds: Optional[int] = None
@@ -42,7 +51,7 @@ class SetCreate(SQLModel):
 class SetRead(SQLModel):
     id: int
     session_exercise_id: int
-    unit: ResistanceUnit
+    unit: str
     value: Optional[float] = None
     reps: Optional[int] = None
     duration_seconds: Optional[int] = None

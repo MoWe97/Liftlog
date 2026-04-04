@@ -21,6 +21,27 @@
     "no_exercises": "Keine Übungen gefunden",
     "create": "\"{{name}}\" erstellen"
   },
+  "manage_page": {
+    "back": "Zurück",
+    "exercises": "Übungen",
+    "no_exercises": "Noch keine Übungen",
+    "add_exercise_placeholder": "Neue Übung...",
+    "workout_types": "Trainingsarten",
+    "no_workout_types": "Noch keine Trainingsarten",
+    "add_workout_type_placeholder": "Neue Trainingsart...",
+    "workout_types_label": "Trainingsarten",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "manage_sheet": {
+    "title": "Verwalten",
+    "exercises": "Übungen",
+    "no_exercises": "Noch keine Übungen",
+    "add_exercise_placeholder": "Neue Übung...",
+    "workout_types": "Trainingsarten",
+    "no_workout_types": "Noch keine Trainingsarten",
+    "add_workout_type_placeholder": "Neue Trainingsart..."
+  },
   "start_session_dialog": {
     "trigger": "Neue Einheit",
     "title": "Neue Einheit",

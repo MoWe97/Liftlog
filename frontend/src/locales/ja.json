@@ -21,6 +21,27 @@
     "no_exercises": "種目が見つかりません",
     "create": "「{{name}}」を作成"
   },
+  "manage_page": {
+    "back": "戻る",
+    "exercises": "種目",
+    "no_exercises": "まだ種目がありません",
+    "add_exercise_placeholder": "新しい種目...",
+    "workout_types": "トレーニング種類",
+    "no_workout_types": "まだトレーニング種類がありません",
+    "add_workout_type_placeholder": "新しいトレーニング種類...",
+    "workout_types_label": "トレーニング種類",
+    "save": "保存",
+    "cancel": "キャンセル"
+  },
+  "manage_sheet": {
+    "title": "管理",
+    "exercises": "種目",
+    "no_exercises": "まだ種目がありません",
+    "add_exercise_placeholder": "新しい種目...",
+    "workout_types": "トレーニング種類",
+    "no_workout_types": "まだトレーニング種類がありません",
+    "add_workout_type_placeholder": "新しいトレーニング種類..."
+  },
   "start_session_dialog": {
     "trigger": "新しいセッション",
     "title": "新しいセッション",

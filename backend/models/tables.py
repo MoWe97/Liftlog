@@ -1,24 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from datetime import date
-from enum import Enum
 
-
-# ── Enums ─────────────────────────────────────────────────────────────────────
-
-class WorkoutTypeName(str, Enum):
-    PUSH = "Push"
-    PULL = "Pull"
-    LEGS = "Legs"
-
-
-class ResistanceUnit(str, Enum):
-    KG = "kg"
-    LBS = "lbs"
-    BODYWEIGHT = "bodyweight"
-
-
-# ── Link table (many-to-many: Exercise ↔ WorkoutType) ─────────────────────────
 
 class ExerciseWorkoutTypeLink(SQLModel, table=True):
     exercise_id: Optional[int] = Field(
@@ -28,8 +11,6 @@ class ExerciseWorkoutTypeLink(SQLModel, table=True):
         default=None, foreign_key="workouttype.id", primary_key=True
     )
 
-
-# ── Core tables ───────────────────────────────────────────────────────────────
 
 class WorkoutType(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -74,7 +55,7 @@ class Set(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     session_exercise_id: Optional[int] = Field(default=None, foreign_key="sessionexercise.id")
 
-    unit: ResistanceUnit
+    unit: str
     value: Optional[float] = None
     reps: Optional[int] = None
     duration_seconds: Optional[int] = None

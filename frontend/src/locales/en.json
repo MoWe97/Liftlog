@@ -21,6 +21,27 @@
     "no_exercises": "No exercises found",
     "create": "Create \"{{name}}\""
   },
+  "manage_page": {
+    "back": "Back",
+    "exercises": "Exercises",
+    "no_exercises": "No exercises yet",
+    "add_exercise_placeholder": "New exercise...",
+    "workout_types": "Workout Types",
+    "no_workout_types": "No workout types yet",
+    "add_workout_type_placeholder": "New workout type...",
+    "workout_types_label": "Workout types",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "manage_sheet": {
+    "title": "Manage",
+    "exercises": "Exercises",
+    "no_exercises": "No exercises yet",
+    "add_exercise_placeholder": "New exercise...",
+    "workout_types": "Workout Types",
+    "no_workout_types": "No workout types yet",
+    "add_workout_type_placeholder": "New workout type..."
+  },
   "start_session_dialog": {
     "trigger": "New session",
     "title": "New Session",

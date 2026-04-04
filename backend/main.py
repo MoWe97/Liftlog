@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from database import create_tables
-from routers import exercises, workout_types, workout_sessions, session_exercise, sets, seed
+from routers import exercises, workout_types, workout_sessions, session_exercise, sets
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -25,7 +25,6 @@ app.include_router(workout_types.router)
 app.include_router(workout_sessions.router)
 app.include_router(session_exercise.router)
 app.include_router(sets.router)
-app.include_router(seed.router)
 
 
 @app.get("/")

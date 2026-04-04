@@ -11,6 +11,11 @@ export const createExercise = async (name: string, workout_types_ids: number[]):
     return response.data;
 };
 
+export const updateExercise = async (id: number, name: string, workout_types_ids: number[]): Promise<Exercise> => {
+    const response = await client.patch(`/exercises/${id}`, { name, workout_types_ids });
+    return response.data;
+};
+
 export const deleteExercise = async (id: number): Promise<void> => {
     await client.delete(`/exercises/${id}`);
 };

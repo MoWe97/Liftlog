@@ -26,14 +26,14 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
         patchSet(sessionExercise.workout_session_id, id, { reps });
     }, 1000);
 
-    const handleRepsChange = (id: number, raw: string) => {
+    function handleRepsChange(id: number, raw: string) {
         const cleaned = raw.replace(/[^0-9]/g, '');
         const reps = cleaned === '' ? undefined : parseInt(cleaned, 10);
         setSets(prev => prev.map(s => s.id === id ? { ...s, reps } : s));
         if (reps !== undefined) saveReps(id, reps);
-    };
+    }
 
-    const groupSets = (sets: ExerciseSet[]) => {
+    function groupSets(sets: ExerciseSet[]) {
         return sets.reduce<ExerciseSet[][]>((groups, set) => {
             const lastGroup = groups[groups.length - 1];
             if (lastGroup && lastGroup[0].value === set.value) {
@@ -43,14 +43,14 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
             }
             return groups;
         }, []);
-    };
+    }
 
-    function handleDeleteSet(id: number): void {
+    function handleDeleteSet(id: number) {
         setSets(prev => prev.filter(s => s.id !== id));
         deleteSet(sessionExercise.workout_session_id, id);
     }
 
-    async function handleAddSet(): Promise<void> {
+    async function handleAddSet() {
         const { value, unit } = sets.length > 0
             ? { value: sets[sets.length - 1].value, unit: sets[sets.length - 1].unit }
             : { value: 0, unit: 'kg' as const };
@@ -118,11 +118,8 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                 <Separator />
                 <div className="flex gap-2 overflow-x-auto">
                     {editMode ? (
-                        // Edit mode: each set individually with weight above and delete button below
                         sets.map((set) => {
                             const isPending = set.id < 0;
-                            const isBodyweight = set.unit === 'bodyweight';
-                            const weightLabel = isBodyweight ? 'BW' : `${set.value ?? '—'}kg`;
                             const isEditingWeight = editingWeightSetIds?.length === 1 && editingWeightSetIds[0] === set.id;
 
                             return (
@@ -145,15 +142,15 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                                                     if (e.key === 'Escape') setEditingWeightSetIds(null);
                                                 }}
                                             />
-                                            {!isBodyweight && <span className="text-xs text-muted-foreground">kg</span>}
+                                            <span className="text-xs text-muted-foreground">{set.unit}</span>
                                         </div>
                                     ) : (
                                         <button
                                             onClick={() => openWeightEdit([set.id], set.value)}
-                                            disabled={isPending || isBodyweight}
+                                            disabled={isPending}
                                             className="text-xs text-muted-foreground disabled:cursor-default"
                                         >
-                                            {weightLabel}
+                                            {set.value ?? '—'}{set.unit}
                                         </button>
                                     )}
                                     <Button
@@ -168,11 +165,8 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                             );
                         })
                     ) : (
-                        // Normal mode: sets grouped by weight
                         groups.map((group, groupIndex) => {
                             const isPending = group.some(s => s.id < 0);
-                            const isBodyweight = group[0].unit === 'bodyweight';
-                            const weightLabel = isBodyweight ? 'BW' : `${group[0].value ?? '—'}kg`;
                             const isEditingGroup = editingWeightSetIds !== null &&
                                 group.every(s => editingWeightSetIds.includes(s.id));
 
@@ -196,15 +190,15 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                                                     if (e.key === 'Escape') setEditingWeightSetIds(null);
                                                 }}
                                             />
-                                            {!isBodyweight && <span className="text-xs text-muted-foreground">kg</span>}
+                                            <span className="text-xs text-muted-foreground">{group[0].unit}</span>
                                         </div>
                                     ) : (
                                         <button
                                             onClick={() => openWeightEdit(group.map(s => s.id), group[0].value)}
-                                            disabled={isPending || isBodyweight}
+                                            disabled={isPending}
                                             className="text-xs text-muted-foreground disabled:cursor-default"
                                         >
-                                            {weightLabel}
+                                            {group[0].value ?? '—'}{group[0].unit}
                                         </button>
                                     )}
                                     <div className="flex gap-1">
