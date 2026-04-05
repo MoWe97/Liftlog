@@ -21,10 +21,13 @@ function MainPanel({ selectedDate, onDateChange }: Props) {
     const { exercises, fetchExercises } = useExerciseStore();
 
     useEffect(() => {
-        const dateStr = selectedDate.toLocaleDateString("en-CA");
-        fetchSessions(dateStr).then();
         fetchExercises().then();
         fetchWorkoutTypes().then();
+    }, [fetchExercises, fetchWorkoutTypes]);
+
+    useEffect(() => {
+        const dateStr = selectedDate.toLocaleDateString("en-CA");
+        fetchSessions(dateStr).then();
     }, [selectedDate]);
 
     const dateStr = selectedDate.toLocaleDateString("en-CA");

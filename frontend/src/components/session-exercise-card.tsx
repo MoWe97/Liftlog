@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { useSetStore } from "@/stores/set-store";
 import { useDebouncedCallback } from "use-debounce";
+import {useSessionStore} from "@/stores/workout-session-store.ts";
 
 interface Props {
     sessionExercise: SessionExercise;
@@ -15,12 +16,16 @@ interface Props {
 }
 
 function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
-    const [sets, setSets] = useState<ExerciseSet[]>(sessionExercise.sets);
     const [editMode, setEditMode] = useState(false);
     const [editingWeightSetIds, setEditingWeightSetIds] = useState<number[] | null>(null);
     const [weightDraft, setWeightDraft] = useState('');
     const weightInputRef = useRef<HTMLInputElement>(null);
-    const { addSet: addSetToStore, deleteSet, patchSet } = useSetStore();
+    const { addSet: addSetToStore, deleteSet, patchSet, patchSetLocally } = useSetStore();
+    const sets = useSessionStore(s => s.sessions
+                            .find(session => session.id === sessionExercise.workout_session_id)
+                            ?.session_exercises
+                            .find(se => se.id === sessionExercise.id)
+                            ?.sets ?? []);
 
     const saveReps = useDebouncedCallback((id: number, reps: number) => {
         patchSet(sessionExercise.workout_session_id, id, { reps });
@@ -29,8 +34,10 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     function handleRepsChange(id: number, raw: string) {
         const cleaned = raw.replace(/[^0-9]/g, '');
         const reps = cleaned === '' ? undefined : parseInt(cleaned, 10);
-        setSets(prev => prev.map(s => s.id === id ? { ...s, reps } : s));
-        if (reps !== undefined) saveReps(id, reps);
+        if (reps === undefined) return;
+
+        patchSetLocally(sessionExercise.workout_session_id, id, { reps });
+        saveReps(id, reps);
     }
 
     function groupSets(sets: ExerciseSet[]) {
@@ -46,7 +53,6 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     }
 
     function handleDeleteSet(id: number) {
-        setSets(prev => prev.filter(s => s.id !== id));
         deleteSet(sessionExercise.workout_session_id, id);
     }
 
@@ -64,10 +70,7 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
             reps: undefined,
             duration_seconds: undefined,
         };
-        setSets(prev => [...prev, tempSet]);
-
-        const [created] = await addSetToStore(sessionExercise.workout_session_id, sessionExercise.id, [tempSet]);
-        setSets(prev => prev.map(s => s.id === tempId ? created : s));
+        await addSetToStore(sessionExercise.workout_session_id, sessionExercise.id, [tempSet]);
     }
 
     function openWeightEdit(ids: number[], currentValue: number | undefined) {
@@ -79,10 +82,8 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     function commitWeightEdit() {
         const newValue = parseFloat(weightDraft);
         if (!isNaN(newValue) && editingWeightSetIds) {
-            setSets(prev => prev.map(s =>
-                editingWeightSetIds.includes(s.id) ? { ...s, value: newValue } : s
-            ));
             for (const id of editingWeightSetIds) {
+                patchSetLocally(sessionExercise.workout_session_id, id, {value: newValue});
                 patchSet(sessionExercise.workout_session_id, id, { value: newValue });
             }
         }
