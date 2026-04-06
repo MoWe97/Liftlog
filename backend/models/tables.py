@@ -5,10 +5,10 @@ from datetime import date
 
 class ExerciseWorkoutTypeLink(SQLModel, table=True):
     exercise_id: Optional[int] = Field(
-        default=None, foreign_key="exercise.id", primary_key=True
+        default=None, foreign_key="exercise.id", primary_key=True, ondelete="CASCADE"
     )
     workout_type_id: Optional[int] = Field(
-        default=None, foreign_key="workouttype.id", primary_key=True
+        default=None, foreign_key="workouttype.id", primary_key=True, ondelete="CASCADE"
     )
 
 
@@ -36,22 +36,22 @@ class WorkoutSession(SQLModel, table=True):
     date: date
     name: Optional[str] = None
 
-    session_exercises: list["SessionExercise"] = Relationship(back_populates="workout_session")
+    session_exercises: list["SessionExercise"] = Relationship(back_populates="workout_session", sa_relationship_kwargs={"passive_deletes": True})
 
 
 class SessionExercise(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    workout_session_id: Optional[int] = Field(default=None, foreign_key="workoutsession.id")
-    exercise_id: Optional[int] = Field(default=None, foreign_key="exercise.id")
+    workout_session_id: Optional[int] = Field(default=None, foreign_key="workoutsession.id", ondelete="CASCADE")
+    exercise_id: Optional[int] = Field(default=None, foreign_key="exercise.id", ondelete="CASCADE")
 
     workout_session: Optional[WorkoutSession] = Relationship(back_populates="session_exercises")
     exercise: Optional[Exercise] = Relationship(back_populates="session_exercises")
-    sets: list["Set"] = Relationship(back_populates="session_exercise")
+    sets: list["Set"] = Relationship(back_populates="session_exercise", sa_relationship_kwargs={"passive_deletes": True})
 
 
 class Set(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    session_exercise_id: Optional[int] = Field(default=None, foreign_key="sessionexercise.id")
+    session_exercise_id: Optional[int] = Field(default=None, foreign_key="sessionexercise.id", ondelete="CASCADE")
 
     unit: str
     value: Optional[float] = None
