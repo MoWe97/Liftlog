@@ -46,7 +46,7 @@ class SessionExercise(SQLModel, table=True):
 
     workout_session: Optional[WorkoutSession] = Relationship(back_populates="session_exercises")
     exercise: Optional[Exercise] = Relationship(back_populates="session_exercises")
-    sets: list["Set"] = Relationship(back_populates="session_exercise", sa_relationship_kwargs={"passive_deletes": True})
+    sets: list["Set"] = Relationship(back_populates="session_exercise", sa_relationship_kwargs={"order_by": "Set.id", "passive_deletes": True})
 
 
 class Set(SQLModel, table=True):

@@ -10,7 +10,7 @@ export interface ExerciseSet {
     session_exercise_id: number;
     unit: ResistanceUnit;
     value: number | undefined;
-    reps: number | undefined;
+    reps: number | null;
     duration_seconds: number | undefined;
 }
 
