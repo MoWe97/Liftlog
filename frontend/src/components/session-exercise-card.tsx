@@ -1,5 +1,4 @@
 import { Item, ItemContent } from "@/components/ui/item.tsx";
-import { Input } from "@/components/ui/input.tsx";
 import type { ExerciseSet, SessionExercise } from "@/types";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Pencil, PlusIcon, Trash2, X } from "lucide-react";
@@ -7,8 +6,8 @@ import { useRef, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { useSetStore } from "@/stores/set-store";
-import { useDebouncedCallback } from "use-debounce";
 import {useSessionStore} from "@/stores/workout-session-store.ts";
+import ExerciseSetChip from "@/components/exercise-set-chip.tsx";
 
 interface Props {
     sessionExercise: SessionExercise;
@@ -26,19 +25,6 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                             ?.session_exercises
                             .find(se => se.id === sessionExercise.id)
                             ?.sets ?? []);
-
-    const saveReps = useDebouncedCallback((id: number, reps: number) => {
-        patchSet(sessionExercise.workout_session_id, id, { reps });
-    }, 1000);
-
-    function handleRepsChange(id: number, raw: string) {
-        const cleaned = raw.replace(/[^0-9]/g, '');
-        const reps = cleaned === '' ? undefined : parseInt(cleaned, 10);
-        if (reps === undefined) return;
-
-        patchSetLocally(sessionExercise.workout_session_id, id, { reps });
-        saveReps(id, reps);
-    }
 
     function groupSets(sets: ExerciseSet[]) {
         return sets.reduce<ExerciseSet[][]>((groups, set) => {
@@ -204,16 +190,7 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                                     )}
                                     <div className="flex gap-1">
                                         {group.map((set) => (
-                                            <Input
-                                                key={set.id}
-                                                maxLength={2}
-                                                type="text"
-                                                inputMode="numeric"
-                                                className="w-9 h-9 text-center text-xs bg-transparent border-primary/20"
-                                                value={set.reps || ''}
-                                                onChange={e => handleRepsChange(set.id, e.target.value)}
-                                                disabled={set.id < 0}
-                                            />
+                                            <ExerciseSetChip key={set.id} workout_session_id={sessionExercise.workout_session_id} exerciseSet={set}/>
                                         ))}
                                     </div>
                                 </div>
