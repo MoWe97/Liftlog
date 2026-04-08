@@ -2,11 +2,11 @@ import { Item, ItemContent } from "@/components/ui/item.tsx";
 import type { ExerciseSet, SessionExercise } from "@/types";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Pencil, PlusIcon, Trash2, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { useSetStore } from "@/stores/set-store";
-import {useSessionStore} from "@/stores/workout-session-store.ts";
+import { useSessionStore } from "@/stores/workout-session-store.ts";
 import ExerciseSetChip from "@/components/exercise-set-chip.tsx";
 
 interface Props {
@@ -16,11 +16,8 @@ interface Props {
 
 function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     const [editMode, setEditMode] = useState(false);
-    const [editingWeightSetIds, setEditingWeightSetIds] = useState<number[] | null>(null);
     const [openFlyoutSetId, setOpenFlyoutSetId] = useState<number | null>(null);
-    const [weightDraft, setWeightDraft] = useState('');
-    const weightInputRef = useRef<HTMLInputElement>(null);
-    const { addSet: addSetToStore, deleteSet, patchSet, patchSetLocally } = useSetStore();
+    const { addSet: addSetToStore, deleteSet } = useSetStore();
     const sets = useSessionStore(s => s.sessions
                             .find(session => session.id === sessionExercise.workout_session_id)
                             ?.session_exercises
@@ -39,10 +36,6 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
         }, []);
     }
 
-    function handleDeleteSet(id: number) {
-        deleteSet(sessionExercise.workout_session_id, id);
-    }
-
     async function handleAddSet() {
         const { value, unit } = sets.length > 0
             ? { value: sets[sets.length - 1].value, unit: sets[sets.length - 1].unit }
@@ -58,23 +51,6 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
             duration_seconds: undefined,
         };
         await addSetToStore(sessionExercise.workout_session_id, sessionExercise.id, [tempSet]);
-    }
-
-    function openWeightEdit(ids: number[], currentValue: number | undefined) {
-        setEditingWeightSetIds(ids);
-        setWeightDraft(currentValue?.toString() ?? '');
-        setTimeout(() => weightInputRef.current?.focus(), 0);
-    }
-
-    function commitWeightEdit() {
-        const newValue = parseFloat(weightDraft);
-        if (!isNaN(newValue) && editingWeightSetIds) {
-            for (const id of editingWeightSetIds) {
-                patchSetLocally(sessionExercise.workout_session_id, id, {value: newValue});
-                patchSet(sessionExercise.workout_session_id, id, { value: newValue });
-            }
-        }
-        setEditingWeightSetIds(null);
     }
 
     const groups = groupSets(sets);
@@ -108,41 +84,16 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                     {editMode ? (
                         sets.map((set) => {
                             const isPending = set.id < 0;
-                            const isEditingWeight = editingWeightSetIds?.length === 1 && editingWeightSetIds[0] === set.id;
-
                             return (
                                 <div
                                     key={set.id}
                                     className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
                                 >
-                                    {isEditingWeight ? (
-                                        <div className="flex items-center gap-0.5">
-                                            <input
-                                                ref={weightInputRef}
-                                                type="text"
-                                                inputMode="decimal"
-                                                className="w-12 text-center text-xs bg-transparent border-b border-primary/50 outline-none"
-                                                value={weightDraft}
-                                                onChange={e => setWeightDraft(e.target.value.replace(/[^0-9.]/g, ''))}
-                                                onBlur={commitWeightEdit}
-                                                onKeyDown={e => {
-                                                    if (e.key === 'Enter') commitWeightEdit();
-                                                    if (e.key === 'Escape') setEditingWeightSetIds(null);
-                                                }}
-                                            />
-                                            <span className="text-xs text-muted-foreground">{set.unit}</span>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={() => openWeightEdit([set.id], set.value)}
-                                            disabled={isPending}
-                                            className="text-xs text-muted-foreground disabled:cursor-default"
-                                        >
-                                            {set.value ?? '—'}{set.unit}
-                                        </button>
-                                    )}
+                                    <span className="text-xs text-muted-foreground">
+                                        {set.value ?? '—'}{set.unit}
+                                    </span>
                                     <Button
-                                        onClick={() => handleDeleteSet(set.id)}
+                                        onClick={() => deleteSet(sessionExercise.workout_session_id, set.id)}
                                         variant="destructive"
                                         size="icon"
                                         disabled={isPending}
@@ -153,56 +104,27 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                             );
                         })
                     ) : (
-                        groups.map((group, groupIndex) => {
-                            const isPending = group.some(s => s.id < 0);
-                            const isEditingGroup = editingWeightSetIds !== null &&
-                                group.every(s => editingWeightSetIds.includes(s.id));
-
-                            return (
-                                <div
-                                    key={groupIndex}
-                                    className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
-                                >
-                                    {isEditingGroup ? (
-                                        <div className="flex items-center gap-0.5">
-                                            <input
-                                                ref={weightInputRef}
-                                                type="text"
-                                                inputMode="decimal"
-                                                className="w-12 text-center text-xs bg-transparent border-b border-primary/50 outline-none"
-                                                value={weightDraft}
-                                                onChange={e => setWeightDraft(e.target.value.replace(/[^0-9.]/g, ''))}
-                                                onBlur={commitWeightEdit}
-                                                onKeyDown={e => {
-                                                    if (e.key === 'Enter') commitWeightEdit();
-                                                    if (e.key === 'Escape') setEditingWeightSetIds(null);
-                                                }}
-                                            />
-                                            <span className="text-xs text-muted-foreground">{group[0].unit}</span>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={() => openWeightEdit(group.map(s => s.id), group[0].value)}
-                                            disabled={isPending}
-                                            className="text-xs text-muted-foreground disabled:cursor-default"
-                                        >
-                                            {group[0].value ?? '—'}{group[0].unit}
-                                        </button>
-                                    )}
-                                    <div className="flex gap-1">
-                                        {group.map((set) => (
-                                            <ExerciseSetChip
-                                                key={set.id}
-                                                workout_session_id={sessionExercise.workout_session_id}
-                                                exerciseSet={set}
-                                                flyoutOpen={openFlyoutSetId === set.id}
-                                                onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
-                                            />
-                                        ))}
-                                    </div>
+                        groups.map((group, groupIndex) => (
+                            <div
+                                key={groupIndex}
+                                className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
+                            >
+                                <span className="text-xs text-muted-foreground">
+                                    {group[0].value ?? '—'}{group[0].unit}
+                                </span>
+                                <div className="flex gap-1">
+                                    {group.map((set) => (
+                                        <ExerciseSetChip
+                                            key={set.id}
+                                            workout_session_id={sessionExercise.workout_session_id}
+                                            exerciseSet={set}
+                                            flyoutOpen={openFlyoutSetId === set.id}
+                                            onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
+                                        />
+                                    ))}
                                 </div>
-                            );
-                        })
+                            </div>
+                        ))
                     )}
                     <Button
                         variant="outline"
