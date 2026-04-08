@@ -17,6 +17,7 @@ interface Props {
 function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     const [editMode, setEditMode] = useState(false);
     const [editingWeightSetIds, setEditingWeightSetIds] = useState<number[] | null>(null);
+    const [openFlyoutSetId, setOpenFlyoutSetId] = useState<number | null>(null);
     const [weightDraft, setWeightDraft] = useState('');
     const weightInputRef = useRef<HTMLInputElement>(null);
     const { addSet: addSetToStore, deleteSet, patchSet, patchSetLocally } = useSetStore();
@@ -190,7 +191,13 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                                     )}
                                     <div className="flex gap-1">
                                         {group.map((set) => (
-                                            <ExerciseSetChip key={set.id} workout_session_id={sessionExercise.workout_session_id} exerciseSet={set}/>
+                                            <ExerciseSetChip
+                                                key={set.id}
+                                                workout_session_id={sessionExercise.workout_session_id}
+                                                exerciseSet={set}
+                                                flyoutOpen={openFlyoutSetId === set.id}
+                                                onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
+                                            />
                                         ))}
                                     </div>
                                 </div>
