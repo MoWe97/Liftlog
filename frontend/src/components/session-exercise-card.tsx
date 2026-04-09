@@ -1,9 +1,8 @@
 import { Item, ItemContent } from "@/components/ui/item.tsx";
 import type { ExerciseSet, SessionExercise } from "@/types";
 import { Separator } from "@/components/ui/separator.tsx";
-import { Pencil, PlusIcon, Trash2, X } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils.ts";
+import { PlusIcon, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { useSetStore } from "@/stores/set-store";
 import { useSessionStore } from "@/stores/workout-session-store.ts";
@@ -15,9 +14,20 @@ interface Props {
 }
 
 function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
-    const [editMode, setEditMode] = useState(false);
     const [openFlyoutSetId, setOpenFlyoutSetId] = useState<number | null>(null);
-    const { addSet: addSetToStore, deleteSet } = useSetStore();
+    const [pendingDelete, setPendingDelete] = useState(false);
+    const pendingDeleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const { addSet: addSetToStore } = useSetStore();
+
+    function handleDeleteClick() {
+        if (pendingDelete) {
+            if (pendingDeleteTimer.current) clearTimeout(pendingDeleteTimer.current);
+            onDelete();
+        } else {
+            setPendingDelete(true);
+            pendingDeleteTimer.current = setTimeout(() => setPendingDelete(false), 2000);
+        }
+    }
     const sets = useSessionStore(s => s.sessions
                             .find(session => session.id === sessionExercise.workout_session_id)
                             ?.session_exercises
@@ -59,73 +69,41 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
         <Item variant="outline" size="xs">
             <ItemContent className="w-full">
                 <div className="relative flex items-center justify-center w-full pb-2">
-                    <button
-                        className={cn('absolute left-0', editMode ? 'text-primary' : 'text-muted-foreground')}
-                        onClick={() => setEditMode(prev => !prev)}
-                    >
-                        <Pencil size={16} />
-                    </button>
                     <span className="truncate max-w-[60%] text-center text-sm font-medium">
                         {sessionExercise.exercise.name}
                     </span>
-                    <button
-                        className={cn(
-                            'absolute right-0 transition-colors',
-                            !editMode ? 'text-muted-foreground/30 pointer-events-none' : 'text-destructive',
-                        )}
-                        onClick={onDelete}
-                        disabled={!editMode}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`absolute right-0 hover:text-destructive hover:bg-destructive/10 ${pendingDelete ? 'text-destructive' : 'text-muted-foreground'}`}
+                        onClick={handleDeleteClick}
                     >
                         <Trash2 size={16} />
-                    </button>
+                    </Button>
                 </div>
                 <Separator />
                 <div className="flex gap-2 overflow-x-auto">
-                    {editMode ? (
-                        sets.map((set) => {
-                            const isPending = set.id < 0;
-                            return (
-                                <div
-                                    key={set.id}
-                                    className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
-                                >
-                                    <span className="text-xs text-muted-foreground">
-                                        {set.value ?? '—'}{set.unit}
-                                    </span>
-                                    <Button
-                                        onClick={() => deleteSet(sessionExercise.workout_session_id, set.id)}
-                                        variant="destructive"
-                                        size="icon"
-                                        disabled={isPending}
-                                    >
-                                        <X size={16} />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        groups.map((group, groupIndex) => (
-                            <div
-                                key={groupIndex}
-                                className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
-                            >
-                                <span className="text-xs text-muted-foreground">
-                                    {group[0].value ?? '—'}{group[0].unit}
-                                </span>
-                                <div className="flex gap-1">
-                                    {group.map((set) => (
-                                        <ExerciseSetChip
-                                            key={set.id}
-                                            workout_session_id={sessionExercise.workout_session_id}
-                                            exerciseSet={set}
-                                            flyoutOpen={openFlyoutSetId === set.id}
-                                            onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
-                                        />
-                                    ))}
-                                </div>
+                    {groups.map((group, groupIndex) => (
+                        <div
+                            key={groupIndex}
+                            className="flex flex-col items-center gap-1 border rounded-md p-1 m-1 border-primary/30 bg-primary/5"
+                        >
+                            <span className="text-xs text-muted-foreground">
+                                {group[0].value ?? '—'}{group[0].unit}
+                            </span>
+                            <div className="flex gap-1">
+                                {group.map((set) => (
+                                    <ExerciseSetChip
+                                        key={set.id}
+                                        workout_session_id={sessionExercise.workout_session_id}
+                                        exerciseSet={set}
+                                        flyoutOpen={openFlyoutSetId === set.id}
+                                        onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
+                                    />
+                                ))}
                             </div>
-                        ))
-                    )}
+                        </div>
+                    ))}
                     <Button
                         variant="outline"
                         size="icon"
