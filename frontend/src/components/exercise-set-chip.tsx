@@ -17,6 +17,8 @@ interface Props {
 function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyoutOpenChange }: Props) {
     const { patchSet, patchSetLocally, deleteSet } = useSetStore();
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const didLongPress = useRef(false);
+    const [editingReps, setEditingReps] = useState(false);
     const [weightDraft, setWeightDraft] = useState('');
     const [repsDraft, setRepsDraft] = useState('');
 
@@ -32,11 +34,20 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
     }
 
     function handlePointerDown() {
+        didLongPress.current = false;
         longPressTimer.current = setTimeout(() => {
+            didLongPress.current = true;
             setWeightDraft(exerciseSet.value?.toString() ?? '');
             setRepsDraft(exerciseSet.reps?.toString() ?? '');
             onFlyoutOpenChange(true);
-        }, 300);
+        }, 400);
+    }
+
+    function handlePointerUp() {
+        if (longPressTimer.current) clearTimeout(longPressTimer.current);
+        if (!didLongPress.current && exerciseSet.id >= 0) {
+            setEditingReps(true);
+        }
     }
 
     function cancelLongPress() {
@@ -69,22 +80,29 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
             <PopoverAnchor asChild>
                 <div
                     onPointerDown={handlePointerDown}
-                    onPointerUp={cancelLongPress}
+                    onPointerUp={handlePointerUp}
                     onPointerLeave={cancelLongPress}
                     onPointerCancel={cancelLongPress}
                     onContextMenu={e => e.preventDefault()}
                     className="select-none p-2 -m-2"
                 >
-                    <Input
-                        maxLength={3}
-                        type="text"
-                        inputMode="numeric"
-                        style={{ fontSize: '16px', userSelect: 'none', WebkitUserSelect: 'none' }}
-                        className={`w-11 h-9 text-center transition-colors ${flyoutOpen ? 'border-primary bg-primary/10' : 'bg-transparent border-primary/20'}`}
-                        value={exerciseSet.reps || ''}
-                        onChange={e => handleRepsChange(e.target.value)}
-                        disabled={exerciseSet.id < 0}
-                    />
+                    {editingReps ? (
+                        <Input
+                            autoFocus
+                            maxLength={3}
+                            type="text"
+                            inputMode="numeric"
+                            style={{ fontSize: '16px' }}
+                            className="w-11 h-9 text-center bg-transparent border-primary"
+                            value={exerciseSet.reps ?? ''}
+                            onChange={e => handleRepsChange(e.target.value)}
+                            onBlur={() => setEditingReps(false)}
+                        />
+                    ) : (
+                        <div className={`w-11 h-9 flex items-center justify-center rounded-md border text-sm transition-colors ${flyoutOpen ? 'border-primary bg-primary/10' : 'border-primary/20'}`}>
+                            {exerciseSet.reps ?? '—'}
+                        </div>
+                    )}
                 </div>
             </PopoverAnchor>
 
