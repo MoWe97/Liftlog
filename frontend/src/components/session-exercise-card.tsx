@@ -15,6 +15,17 @@ interface Props {
 
 function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
     const [openFlyoutSetId, setOpenFlyoutSetId] = useState<number | null>(null);
+    const [editingRepsSetId, setEditingRepsSetId] = useState<number | null>(null);
+
+    function handleFlyoutOpenChange(setId: number, open: boolean) {
+        setOpenFlyoutSetId(open ? setId : null);
+        if (open) setEditingRepsSetId(null);
+    }
+
+    function handleEditingRepsChange(setId: number, editing: boolean) {
+        setEditingRepsSetId(editing ? setId : null);
+        if (editing) setOpenFlyoutSetId(null);
+    }
     const [pendingDelete, setPendingDelete] = useState(false);
     const pendingDeleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { addSet: addSetToStore } = useSetStore();
@@ -98,7 +109,9 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
                                         workout_session_id={sessionExercise.workout_session_id}
                                         exerciseSet={set}
                                         flyoutOpen={openFlyoutSetId === set.id}
-                                        onFlyoutOpenChange={(open) => setOpenFlyoutSetId(open ? set.id : null)}
+                                        onFlyoutOpenChange={(open) => handleFlyoutOpenChange(set.id, open)}
+                                        editingReps={editingRepsSetId === set.id}
+                                        onEditingRepsChange={(editing) => handleEditingRepsChange(set.id, editing)}
                                     />
                                 ))}
                             </div>

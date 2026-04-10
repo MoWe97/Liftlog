@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { useSetStore } from "@/stores/set-store.ts";
 import { useDebouncedCallback } from "use-debounce";
 import type { ExerciseSet } from "@/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Trash2 } from "lucide-react";
@@ -12,15 +12,19 @@ interface Props {
     exerciseSet: ExerciseSet;
     flyoutOpen: boolean;
     onFlyoutOpenChange: (open: boolean) => void;
+    editingReps: boolean;
+    onEditingRepsChange: (editing: boolean) => void;
 }
 
-function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyoutOpenChange }: Props) {
+function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyoutOpenChange, editingReps, onEditingRepsChange }: Props) {
     const { patchSet, patchSetLocally, deleteSet } = useSetStore();
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const didLongPress = useRef(false);
-    const [editingReps, setEditingReps] = useState(false);
+    const prevFlyoutOpen = useRef(false);
     const [weightDraft, setWeightDraft] = useState('');
     const [repsDraft, setRepsDraft] = useState('');
+    const weightDraftRef = useRef('');
+    const repsDraftRef = useRef('');
 
     const saveReps = useDebouncedCallback((id: number, reps: number | null) => {
         patchSet(workout_session_id, id, { reps });
@@ -37,8 +41,10 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
         didLongPress.current = false;
         longPressTimer.current = setTimeout(() => {
             didLongPress.current = true;
-            setWeightDraft(exerciseSet.value?.toString() ?? '');
-            setRepsDraft(exerciseSet.reps?.toString() ?? '');
+            const w = exerciseSet.value?.toString() ?? '';
+            const r = exerciseSet.reps?.toString() ?? '';
+            setWeightDraft(w); weightDraftRef.current = w;
+            setRepsDraft(r); repsDraftRef.current = r;
             onFlyoutOpenChange(true);
         }, 400);
     }
@@ -46,7 +52,7 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
     function handlePointerUp() {
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
         if (!didLongPress.current && exerciseSet.id >= 0) {
-            setEditingReps(true);
+            onEditingRepsChange(true);
         }
     }
 
@@ -54,20 +60,23 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
     }
 
-    function commitWeight() {
-        const value = parseFloat(weightDraft);
-        if (!isNaN(value)) {
-            patchSetLocally(workout_session_id, exerciseSet.id, { value });
-            patchSet(workout_session_id, exerciseSet.id, { value });
+    useEffect(() => {
+        if (prevFlyoutOpen.current && !flyoutOpen) {
+            const value = parseFloat(weightDraftRef.current);
+            const reps = parseInt(repsDraftRef.current, 10);
+            const patch: Record<string, number> = {};
+            if (!isNaN(value) && value !== exerciseSet.value) patch.value = value;
+            if (!isNaN(reps) && reps !== exerciseSet.reps) patch.reps = reps;
+            if (Object.keys(patch).length > 0) {
+                patchSetLocally(workout_session_id, exerciseSet.id, patch);
+                patchSet(workout_session_id, exerciseSet.id, patch);
+            }
         }
-    }
+        prevFlyoutOpen.current = flyoutOpen;
+    }, [flyoutOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    function commitReps() {
-        const reps = parseInt(repsDraft, 10);
-        if (!isNaN(reps)) {
-            patchSetLocally(workout_session_id, exerciseSet.id, { reps });
-            patchSet(workout_session_id, exerciseSet.id, { reps });
-        }
+    function handleFlyoutOpenChange(open: boolean) {
+        onFlyoutOpenChange(open);
     }
 
     function handleDelete() {
@@ -76,7 +85,7 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
     }
 
     return (
-        <Popover open={flyoutOpen} onOpenChange={onFlyoutOpenChange}>
+        <Popover open={flyoutOpen} onOpenChange={handleFlyoutOpenChange}>
             <PopoverAnchor asChild>
                 <div
                     onPointerDown={handlePointerDown}
@@ -96,7 +105,7 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
                             className="w-11 h-9 text-center bg-transparent border-primary"
                             value={exerciseSet.reps ?? ''}
                             onChange={e => handleRepsChange(e.target.value)}
-                            onBlur={() => setEditingReps(false)}
+                            onBlur={() => onEditingRepsChange(false)}
                         />
                     ) : (
                         <div className={`w-11 h-9 flex items-center justify-center rounded-md border text-sm transition-colors ${flyoutOpen ? 'border-primary bg-primary/10' : 'border-primary/20'}`}>
@@ -119,9 +128,8 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
                             type="text"
                             inputMode="decimal"
                             value={weightDraft}
-                            onChange={e => setWeightDraft(e.target.value.replace(/[^0-9.]/g, ''))}
-                            onBlur={commitWeight}
-                            onKeyDown={e => { if (e.key === 'Enter') commitWeight(); }}
+                            onChange={e => { const v = e.target.value.replace(/[^0-9.]/g, ''); setWeightDraft(v); weightDraftRef.current = v; }}
+                            onKeyDown={e => { if (e.key === 'Enter') handleFlyoutOpenChange(false); }}
                             className="w-20 text-center h-9"
                             style={{ fontSize: '16px' }}
                         />
@@ -132,9 +140,8 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
                             type="text"
                             inputMode="numeric"
                             value={repsDraft}
-                            onChange={e => setRepsDraft(e.target.value.replace(/[^0-9]/g, ''))}
-                            onBlur={commitReps}
-                            onKeyDown={e => { if (e.key === 'Enter') commitReps(); }}
+                            onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setRepsDraft(v); repsDraftRef.current = v; }}
+                            onKeyDown={e => { if (e.key === 'Enter') handleFlyoutOpenChange(false); }}
                             className="w-16 text-center h-9"
                             style={{ fontSize: '16px' }}
                         />
