@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { WorkoutType } from "@/types";
 import { useTranslation } from "react-i18next";
+import { useWorkoutTypesStore } from "@/stores/workout-types-store";
 
 interface Props {
     workoutTypes: WorkoutType[];
@@ -15,14 +16,27 @@ function StartSessionDialog({ workoutTypes, onStart }: Props) {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
+    const createWorkoutType = useWorkoutTypesStore(s => s.createWorkoutType);
 
     function handleTemplate(wt: WorkoutType) {
         onStart(wt.name, wt.id);
         close();
     }
 
-    function handleBlank() {
-        onStart(name.trim() || undefined);
+    async function handleBlank() {
+        const trimmed = name.trim();
+        if (!trimmed) {
+            onStart();
+            close();
+            return;
+        }
+        const existing = workoutTypes.find(wt => wt.name.toLowerCase() === trimmed.toLowerCase());
+        if (existing) {
+            onStart(existing.name, existing.id);
+        } else {
+            const created = await createWorkoutType(trimmed);
+            onStart(created.name, created.id);
+        }
         close();
     }
 
