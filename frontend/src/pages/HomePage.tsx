@@ -15,7 +15,6 @@ function HomePage() {
                     <div className="flex-1">
                         <MainPanel selectedDate={selectedDate} onDateChange={setSelectedDate} />
                     </div>
-                    <div className="w-64">right</div>
                 </div>
             </div>
 

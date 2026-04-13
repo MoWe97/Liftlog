@@ -44,54 +44,30 @@ function MainPanel({ selectedDate, onDateChange }: Props) {
     );
 
     return (
-        <>
-            {/* Desktop */}
-            <div className="hidden md:flex flex-1 p-6 flex-col gap-4">
-                <DateNavigator selectedDate={selectedDate} onDateChange={onDateChange} />
-                <div className="flex flex-col gap-3">
-                    {sessions.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-4">
-                            <span className="text-4xl">🏋️</span>
-                            <span className="text-sm">{t("main_panel.no_sessions_recorded")}</span>
-                            {dialog}
-                        </div>
-                    ) : (
-                        <>
-                            {sessions.map(session => (
-                                <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
-                            ))}
-                            {dialog}
-                        </>
-                    )}
-                </div>
+        <div className="flex flex-1 p-2 flex-col gap-4">
+            <DateNavigator selectedDate={selectedDate} onDateChange={onDateChange} />
+            <div className="flex flex-col gap-3 px-6">
+                {sessions.length === 0 ? (
+                    <Empty className="bg-muted/30">
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <Dumbbell />
+                            </EmptyMedia>
+                            <EmptyTitle>{t("main_panel.no_workout_session1")}</EmptyTitle>
+                            <EmptyDescription>{t("main_panel.no_workout_session2")}</EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>{dialog}</EmptyContent>
+                    </Empty>
+                ) : (
+                    <>
+                        {sessions.map(session => (
+                            <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
+                        ))}
+                        {dialog}
+                    </>
+                )}
             </div>
-
-            {/* Mobile */}
-            <div className="flex md:hidden flex-1 p-2 flex-col gap-4">
-                <DateNavigator selectedDate={selectedDate} onDateChange={onDateChange} />
-                <div className="flex flex-col gap-3 px-6">
-                    {sessions.length === 0 ? (
-                        <Empty className="bg-muted/30">
-                            <EmptyHeader>
-                                <EmptyMedia variant="icon">
-                                    <Dumbbell />
-                                </EmptyMedia>
-                                <EmptyTitle>{t("main_panel.no_workout_session1")}</EmptyTitle>
-                                <EmptyDescription>{t("main_panel.no_workout_session2")}</EmptyDescription>
-                            </EmptyHeader>
-                            <EmptyContent>{dialog}</EmptyContent>
-                        </Empty>
-                    ) : (
-                        <>
-                            {sessions.map(session => (
-                                <WorkoutSessionCard key={session.id} session={session} exercises={exercises} />
-                            ))}
-                            {dialog}
-                        </>
-                    )}
-                </div>
-            </div>
-        </>
+        </div>
     );
 }
 
