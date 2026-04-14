@@ -20,6 +20,7 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
     const { patchSet, patchSetLocally, deleteSet } = useSetStore();
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const didLongPress = useRef(false);
+    const [chargePhase, setChargePhase] = useState<'idle' | 'charging' | 'rewinding'>('idle');
     const prevFlyoutOpen = useRef(false);
     const [weightDraft, setWeightDraft] = useState('');
     const [repsDraft, setRepsDraft] = useState('');
@@ -39,8 +40,12 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
 
     function handlePointerDown() {
         didLongPress.current = false;
+        setChargePhase('charging');
+        try { navigator.vibrate?.(12); } catch { /* unsupported */ }
         longPressTimer.current = setTimeout(() => {
             didLongPress.current = true;
+            setChargePhase('idle');
+            try { navigator.vibrate?.(60); } catch { /* unsupported */ }
             const w = exerciseSet.value?.toString() ?? '';
             const r = exerciseSet.reps?.toString() ?? '';
             setWeightDraft(w); weightDraftRef.current = w;
@@ -51,13 +56,15 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
 
     function handlePointerUp() {
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
-        if (!didLongPress.current && exerciseSet.id >= 0) {
-            onEditingRepsChange(true);
+        if (!didLongPress.current) {
+            setChargePhase('rewinding');
+            if (exerciseSet.id >= 0) onEditingRepsChange(true);
         }
     }
 
     function cancelLongPress() {
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
+        if (!didLongPress.current) setChargePhase('rewinding');
     }
 
     useEffect(() => {
@@ -93,8 +100,22 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
                     onPointerLeave={cancelLongPress}
                     onPointerCancel={cancelLongPress}
                     onContextMenu={e => e.preventDefault()}
-                    className="select-none p-2 -m-2"
+                    className="relative select-none p-2 -m-2"
                 >
+                    {!editingReps && (
+                        <div
+                            className="absolute inset-2 rounded-md border-2 border-primary pointer-events-none"
+                            style={{
+                                transform: chargePhase === 'charging' ? 'scale(2)' : 'scale(1)',
+                                opacity: chargePhase === 'charging' ? 0.5 : 0,
+                                transition: chargePhase === 'charging'
+                                    ? 'transform 400ms ease-in, opacity 80ms'
+                                    : chargePhase === 'rewinding'
+                                    ? 'transform 150ms ease-out, opacity 150ms ease-out'
+                                    : 'none',
+                            }}
+                        />
+                    )}
                     {editingReps ? (
                         <Input
                             autoFocus
@@ -108,8 +129,22 @@ function ExerciseSetChip({ workout_session_id, exerciseSet, flyoutOpen, onFlyout
                             onBlur={() => onEditingRepsChange(false)}
                         />
                     ) : (
-                        <div className={`w-11 h-9 flex items-center justify-center rounded-md border text-sm transition-colors ${flyoutOpen ? 'border-primary bg-primary/10' : 'border-primary/20'}`}>
-                            {exerciseSet.reps ?? '—'}
+                        <div className={`relative w-11 h-9 flex items-center justify-center rounded-md border text-sm overflow-hidden transition-colors ${flyoutOpen ? 'border-primary bg-primary/10' : 'border-primary/20'}`}>
+                            <div
+                                className="absolute inset-0 bg-primary/25 origin-left"
+                                style={{
+                                    transform: chargePhase === 'charging' ? 'scaleX(1)' : 'scaleX(0)',
+                                    transition: chargePhase === 'charging'
+                                        ? 'transform 400ms ease-in'
+                                        : chargePhase === 'rewinding'
+                                        ? 'transform 150ms ease-out'
+                                        : 'none',
+                                }}
+                                onTransitionEnd={() => {
+                                    if (chargePhase === 'rewinding') setChargePhase('idle');
+                                }}
+                            />
+                            <span className="relative z-10">{exerciseSet.reps ?? '—'}</span>
                         </div>
                     )}
                 </div>
