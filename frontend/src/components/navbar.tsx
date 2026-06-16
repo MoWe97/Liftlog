@@ -43,7 +43,7 @@ function Navbar() {
                         variant="ghost"
                         size="icon"
                         className="text-muted-foreground hover:text-foreground"
-                        onClick={() => navigate("/manage")}
+                        onClick={() => navigate("/app/manage")}
                     >
                         <Settings2 size={18} />
                     </Button>
