@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
+from auth import get_current_user
 from datetime import date as Date
 from models import WorkoutSession, WorkoutSessionCreate, WorkoutSessionRead, SessionExercise, Exercise, ExerciseWorkoutTypeLink, WorkoutType
 
@@ -8,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/workout-sessions", response_model=WorkoutSessionRead)
-def create_workout_session(workout_session: WorkoutSessionCreate, session: Session = Depends(get_session)):
+def create_workout_session(workout_session: WorkoutSessionCreate, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     name = workout_session.name
 
     # If a template is chosen and no name is given, inherit the template name
@@ -38,7 +39,7 @@ def create_workout_session(workout_session: WorkoutSessionCreate, session: Sessi
 
 
 @router.get("/workout-sessions", response_model=list[WorkoutSessionRead])
-def get_workout_sessions(date: Date = None, session: Session = Depends(get_session)):
+def get_workout_sessions(date: Date = None, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     query = select(WorkoutSession)
     if date:
         query = query.where(WorkoutSession.date == date)
@@ -47,7 +48,7 @@ def get_workout_sessions(date: Date = None, session: Session = Depends(get_sessi
 
 
 @router.get("/workout-sessions/{workout_session_id}", response_model=WorkoutSessionRead)
-def get_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
+def get_workout_session(workout_session_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(WorkoutSession, workout_session_id)
     if not item:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -55,7 +56,7 @@ def get_workout_session(workout_session_id: int, session: Session = Depends(get_
 
 
 @router.delete("/workout-sessions/{workout_session_id}", status_code=204)
-def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session)):
+def delete_workout_session(workout_session_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(WorkoutSession, workout_session_id)
     if not item:
         raise HTTPException(status_code=404, detail="Session not found")

@@ -1,19 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
+from auth import get_current_user
 from models import WorkoutType, WorkoutTypeCreate, WorkoutTypeUpdate
 
 router = APIRouter()
 
 
 @router.get("/workout-types", response_model=list[WorkoutType])
-def get_workout_types(session: Session = Depends(get_session)):
+def get_workout_types(session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     items = session.exec(select(WorkoutType)).all()
     return items
 
 
 @router.post("/workout-types", response_model=WorkoutType)
-def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depends(get_session)):
+def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = WorkoutType(name=workout_type.name)
     session.add(item)
     session.commit()
@@ -22,7 +23,7 @@ def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depe
 
 
 @router.patch("/workout-types/{workout_type_id}", response_model=WorkoutType)
-def update_workout_type(workout_type_id: int, update: WorkoutTypeUpdate, session: Session = Depends(get_session)):
+def update_workout_type(workout_type_id: int, update: WorkoutTypeUpdate, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(WorkoutType, workout_type_id)
     if not item:
         raise HTTPException(status_code=404, detail="WorkoutType not found")
@@ -34,7 +35,7 @@ def update_workout_type(workout_type_id: int, update: WorkoutTypeUpdate, session
 
 
 @router.delete("/workout-types/{workout_type_id}", status_code=204)
-def delete_workout_type(workout_type_id: int, session: Session = Depends(get_session)):
+def delete_workout_type(workout_type_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(WorkoutType, workout_type_id)
     if not item:
         raise HTTPException(status_code=404, detail="WorkoutType not found")

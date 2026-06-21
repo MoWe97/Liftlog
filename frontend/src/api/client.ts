@@ -5,6 +5,12 @@ const client = axios.create({
     baseURL: "/api",
 });
 
+client.interceptors.request.use(async (config) => {
+    const token = await (window as any).Clerk?.session?.getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
 client.interceptors.response.use(
     response => response,
     error => {

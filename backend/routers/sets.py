@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
+from auth import get_current_user
 from models import Set, SetCreate, SetRead, SetUpdate
 
 router = APIRouter()
 
 
 @router.post("/session-exercise/{session_exercise_id}/sets", response_model=list[SetRead])
-def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate], session: Session = Depends(get_session)):
+def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate], session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     items = []
     for new_set in sets:
         item = Set.model_validate({**new_set.model_dump(), "session_exercise_id": session_exercise_id})
@@ -20,7 +21,7 @@ def create_session_exercise_sets(session_exercise_id: int, sets: list[SetCreate]
 
 
 @router.get("/session-exercise/{session_exercise_id}/sets", response_model=list[SetRead])
-def get_session_exercise_sets(session_exercise_id: int, session: Session = Depends(get_session)):
+def get_session_exercise_sets(session_exercise_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     items = session.exec(
         select(Set)
         .where(Set.session_exercise_id == session_exercise_id)
@@ -30,7 +31,7 @@ def get_session_exercise_sets(session_exercise_id: int, session: Session = Depen
 
 
 @router.delete("/sets/{set_id}", response_model=SetRead)
-def delete_set(set_id: int, session: Session = Depends(get_session)):
+def delete_set(set_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(Set, set_id)
     if not item:
         raise HTTPException(status_code=404, detail="Set not found")
@@ -40,7 +41,7 @@ def delete_set(set_id: int, session: Session = Depends(get_session)):
 
 
 @router.patch("/sets/{set_id}", response_model=SetRead)
-def update_set(set_id: int, set_update: SetUpdate, session: Session = Depends(get_session)):
+def update_set(set_id: int, set_update: SetUpdate, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(Set, set_id)
     if not item:
         raise HTTPException(status_code=404, detail="Set not found")

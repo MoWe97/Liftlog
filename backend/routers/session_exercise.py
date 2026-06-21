@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
+from auth import get_current_user
 from models import SessionExercise, SessionExerciseRead, Set
 
 router = APIRouter()
 
 
 @router.post("/workout-sessions/{workout_session_id}/exercises", response_model=SessionExerciseRead)
-def create_workout_session_exercise(workout_session_id: int, exercise_id: int, session: Session = Depends(get_session)):
+def create_workout_session_exercise(workout_session_id: int, exercise_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = SessionExercise.model_validate({"workout_session_id": workout_session_id, "exercise_id": exercise_id})
     session.add(item)
     session.commit()
@@ -16,7 +17,7 @@ def create_workout_session_exercise(workout_session_id: int, exercise_id: int, s
 
 
 @router.delete("/session-exercises/{session_exercise_id}", status_code=204)
-def delete_session_exercise(session_exercise_id: int, session: Session = Depends(get_session)):
+def delete_session_exercise(session_exercise_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     item = session.get(SessionExercise, session_exercise_id)
     if not item:
         raise HTTPException(status_code=404, detail="SessionExercise not found")
@@ -27,7 +28,7 @@ def delete_session_exercise(session_exercise_id: int, session: Session = Depends
 
 
 @router.get("/workout-sessions/{workout_session_id}/exercises", response_model=list[SessionExerciseRead])
-def get_workout_session_exercises(workout_session_id: int, session: Session = Depends(get_session)):
+def get_workout_session_exercises(workout_session_id: int, session: Session = Depends(get_session), _: str = Depends(get_current_user)):
     items = session.exec(
         select(SessionExercise)
         .where(SessionExercise.workout_session_id == workout_session_id)
