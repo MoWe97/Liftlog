@@ -31,15 +31,6 @@ function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <a
-                        href="https://github.com/MoWe97/liftlog"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <GithubLogoIcon size={18} />
-                    </a>
-
                     <Button
                         variant="ghost"
                         size="icon"
@@ -48,6 +39,12 @@ function Navbar() {
                     >
                         <Settings2 size={18} />
                     </Button>
+
+                    <div className="flex items-center gap-2">
+                        <Sun size={14} className="text-muted-foreground" />
+                        <Switch checked={theme === "dark"} onCheckedChange={toggle} />
+                        <Moon size={14} className="text-muted-foreground" />
+                    </div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -70,11 +67,14 @@ function Navbar() {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <div className="flex items-center gap-2">
-                        <Sun size={14} className="text-muted-foreground" />
-                        <Switch checked={theme === "dark"} onCheckedChange={toggle} />
-                        <Moon size={14} className="text-muted-foreground" />
-                    </div>
+                    <a
+                        href="https://github.com/MoWe97/liftlog"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <GithubLogoIcon size={18} />
+                    </a>
 
                     <UserButton afterSignOutUrl="/" />
                 </div>

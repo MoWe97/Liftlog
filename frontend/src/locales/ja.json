@@ -42,6 +42,19 @@
     "no_workout_types": "まだトレーニング種類がありません",
     "add_workout_type_placeholder": "新しいトレーニング種類..."
   },
+  "landing_page": {
+    "headline": "トレーニングを記録。",
+    "headline_highlight": "進捗を確認。",
+    "subtitle": "シンプルで速いワークアウトロガー。セッションを記録し、セットを追跡して継続しよう。",
+    "sign_in": "Googleでサインイン",
+    "feature_1_title": "日付別に記録",
+    "feature_1_desc": "すべてのワークアウトを日付に紐付け。履歴をひと目で確認。",
+    "feature_2_title": "種目を追跡",
+    "feature_2_desc": "トレーニング種類別に整理。重量と回数でセットを記録。",
+    "feature_3_title": "継続する",
+    "feature_3_desc": "セッションが積み重なるのを見て習慣を築く。",
+    "built_by": "MoWe97 制作"
+  },
   "start_session_dialog": {
     "trigger": "新しいセッション",
     "title": "新しいセッション",

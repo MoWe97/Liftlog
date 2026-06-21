@@ -1,26 +1,26 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, Dumbbell, TrendingUp } from "lucide-react";
+import { CalendarDays, Dumbbell, LanguagesIcon, Moon, Sun, TrendingUp } from "lucide-react";
 import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { SignInButton, useAuth } from "@clerk/react";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@/components/theme-provider";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const features = [
-    {
-        icon: CalendarDays,
-        title: "Log by date",
-        description: "Every workout tied to a date. Navigate your history at a glance.",
-    },
-    {
-        icon: Dumbbell,
-        title: "Track exercises",
-        description: "Organize exercises by workout type. Add sets with weight and reps.",
-    },
-    {
-        icon: TrendingUp,
-        title: "Stay consistent",
-        description: "Build a habit by seeing your sessions stack up over time.",
-    },
+    { icon: CalendarDays, titleKey: "landing_page.feature_1_title", descKey: "landing_page.feature_1_desc" },
+    { icon: Dumbbell,     titleKey: "landing_page.feature_2_title", descKey: "landing_page.feature_2_desc" },
+    { icon: TrendingUp,   titleKey: "landing_page.feature_3_title", descKey: "landing_page.feature_3_desc" },
 ];
 
 const GoogleIcon = () => (
@@ -35,6 +35,8 @@ const GoogleIcon = () => (
 function LandingPage() {
     const { isSignedIn, isLoaded } = useAuth();
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
+    const { theme, toggle } = useTheme();
 
     useEffect(() => {
         if (isLoaded && isSignedIn) navigate("/app", { replace: true });
@@ -46,50 +48,74 @@ function LandingPage() {
                 <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-primary to-orange-300 bg-clip-text text-transparent">
                     LiftLog
                 </span>
-                <a
-                    href="https://github.com/MoWe97/liftlog"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    <GithubLogoIcon size={20} />
-                </a>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Sun size={14} className="text-muted-foreground" />
+                        <Switch checked={theme === "dark"} onCheckedChange={toggle} />
+                        <Moon size={14} className="text-muted-foreground" />
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="text-muted-foreground" variant="ghost" size="icon">
+                                <LanguagesIcon />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="min-w-56">
+                            <DropdownMenuGroup>
+                                <DropdownMenuLabel>{t("navbar.lang_select")}</DropdownMenuLabel>
+                                <DropdownMenuRadioGroup value={i18n.language} onValueChange={i18n.changeLanguage}>
+                                    <DropdownMenuRadioItem value="de">Deutsch</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="ja">日本語</DropdownMenuRadioItem>
+                                </DropdownMenuRadioGroup>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <a
+                        href="https://github.com/MoWe97/liftlog"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <GithubLogoIcon size={20} />
+                    </a>
+                </div>
             </nav>
 
             <main className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center gap-6">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-                    Track your lifts.<br />
+                    {t("landing_page.headline")}<br />
                     <span className="bg-gradient-to-r from-primary to-orange-300 bg-clip-text text-transparent">
-                        See your progress.
+                        {t("landing_page.headline_highlight")}
                     </span>
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-md">
-                    A clean, fast workout logger. Log sessions, track sets, and stay consistent.
+                    {t("landing_page.subtitle")}
                 </p>
                 <SignInButton mode="modal">
                     <Button size="lg" className="gap-2 mt-2">
                         <GoogleIcon />
-                        Sign in with Google
+                        {t("landing_page.sign_in")}
                     </Button>
                 </SignInButton>
             </main>
 
             <section className="px-6 py-16 border-t border-white/10">
                 <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {features.map(({ icon: Icon, title, description }) => (
-                        <div key={title} className="flex flex-col gap-3">
+                    {features.map(({ icon: Icon, titleKey, descKey }) => (
+                        <div key={titleKey} className="flex flex-col gap-3">
                             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                                 <Icon size={20} className="text-primary" />
                             </div>
-                            <h3 className="font-semibold">{title}</h3>
-                            <p className="text-sm text-muted-foreground">{description}</p>
+                            <h3 className="font-semibold">{t(titleKey)}</h3>
+                            <p className="text-sm text-muted-foreground">{t(descKey)}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
             <footer className="px-6 py-6 border-t border-white/10 flex items-center justify-between text-sm text-muted-foreground">
-                <span>Built by MoWe97</span>
+                <span>{t("landing_page.built_by")}</span>
                 <a
                     href="https://github.com/MoWe97/liftlog"
                     target="_blank"

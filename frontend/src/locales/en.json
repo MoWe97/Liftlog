@@ -42,6 +42,19 @@
     "no_workout_types": "No workout types yet",
     "add_workout_type_placeholder": "New workout type..."
   },
+  "landing_page": {
+    "headline": "Track your lifts.",
+    "headline_highlight": "See your progress.",
+    "subtitle": "A clean, fast workout logger. Log sessions, track sets, and stay consistent.",
+    "sign_in": "Sign in with Google",
+    "feature_1_title": "Log by date",
+    "feature_1_desc": "Every workout tied to a date. Navigate your history at a glance.",
+    "feature_2_title": "Track exercises",
+    "feature_2_desc": "Organize exercises by workout type. Add sets with weight and reps.",
+    "feature_3_title": "Stay consistent",
+    "feature_3_desc": "Build a habit by seeing your sessions stack up over time.",
+    "built_by": "Built by MoWe97"
+  },
   "start_session_dialog": {
     "trigger": "New session",
     "title": "New Session",
