@@ -1,6 +1,9 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CalendarDays, Dumbbell, TrendingUp } from "lucide-react";
 import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
+import { SignInButton, useAuth } from "@clerk/react";
 
 const features = [
     {
@@ -30,6 +33,13 @@ const GoogleIcon = () => (
 );
 
 function LandingPage() {
+    const { isSignedIn, isLoaded } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoaded && isSignedIn) navigate("/app", { replace: true });
+    }, [isLoaded, isSignedIn]);
+
     return (
         <div className="min-h-screen flex flex-col bg-background text-foreground">
             <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
@@ -56,10 +66,12 @@ function LandingPage() {
                 <p className="text-muted-foreground text-lg max-w-md">
                     A clean, fast workout logger. Log sessions, track sets, and stay consistent.
                 </p>
-                <Button size="lg" className="gap-2 mt-2">
-                    <GoogleIcon />
-                    Sign in with Google
-                </Button>
+                <SignInButton mode="modal">
+                    <Button size="lg" className="gap-2 mt-2">
+                        <GoogleIcon />
+                        Sign in with Google
+                    </Button>
+                </SignInButton>
             </main>
 
             <section className="px-6 py-16 border-t border-white/10">

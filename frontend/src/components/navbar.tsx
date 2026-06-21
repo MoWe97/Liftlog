@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { UserButton } from "@clerk/react";
 
 function Navbar() {
     const { t, i18n } = useTranslation();
@@ -74,6 +75,8 @@ function Navbar() {
                         <Switch checked={theme === "dark"} onCheckedChange={toggle} />
                         <Moon size={14} className="text-muted-foreground" />
                     </div>
+
+                    <UserButton afterSignOutUrl="/" />
                 </div>
             </nav>
 
