@@ -2,18 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import get_session
 from auth import get_current_user
-from models import WorkoutType, WorkoutTypeCreate, WorkoutTypeUpdate
+from models import WorkoutType, WorkoutTypeCreate, WorkoutTypeUpdate, WorkoutTypeRead
 
 router = APIRouter()
 
 
-@router.get("/workout-types", response_model=list[WorkoutType])
+@router.get("/workout-types", response_model=list[WorkoutTypeRead])
 def get_workout_types(session: Session = Depends(get_session), user_id: str = Depends(get_current_user)):
     items = session.exec(select(WorkoutType).where(WorkoutType.user_id == user_id)).all()
     return items
 
 
-@router.post("/workout-types", response_model=WorkoutType)
+@router.post("/workout-types", response_model=WorkoutTypeRead)
 def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depends(get_session), user_id: str = Depends(get_current_user)):
     item = WorkoutType(name=workout_type.name, user_id=user_id)
     session.add(item)
@@ -22,7 +22,7 @@ def create_workout_type(workout_type: WorkoutTypeCreate, session: Session = Depe
     return item
 
 
-@router.patch("/workout-types/{workout_type_id}", response_model=WorkoutType)
+@router.patch("/workout-types/{workout_type_id}", response_model=WorkoutTypeRead)
 def update_workout_type(workout_type_id: int, update: WorkoutTypeUpdate, session: Session = Depends(get_session), user_id: str = Depends(get_current_user)):
     item = session.get(WorkoutType, workout_type_id)
     if not item:

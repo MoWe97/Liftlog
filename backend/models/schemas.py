@@ -32,6 +32,11 @@ class WorkoutTypeUpdate(SQLModel):
     name: str
 
 
+class WorkoutTypeRead(SQLModel):
+    id: int
+    name: str
+
+
 # ── WorkoutSession ─────────────────────────────────────────────────────────────
 
 class WorkoutSessionCreate(SQLModel):
