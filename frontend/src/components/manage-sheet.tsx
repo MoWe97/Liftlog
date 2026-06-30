@@ -2,7 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Check, Pencil, PlusIcon, Trash2, X } from "lucide-react";
+import { Check, Pencil, PlusIcon, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useExerciseStore } from "@/stores/exercises-store";
 import { useWorkoutTypesStore } from "@/stores/workout-types-store";
@@ -40,7 +40,8 @@ function ManageSheet({ open, onOpenChange }: Props) {
 
     function commitEditExercise() {
         if (editingExercise && editingExercise.draft.trim()) {
-            renameExercise(editingExercise.id, editingExercise.draft.trim());
+            const workoutTypeIds = exercises.find(e => e.id === editingExercise.id)?.workout_types.map(wt => wt.id) ?? [];
+            renameExercise(editingExercise.id, editingExercise.draft.trim(), workoutTypeIds);
         }
         setEditingExercise(null);
     }

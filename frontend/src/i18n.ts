@@ -18,7 +18,7 @@ i18n
         supportedLngs: ["en", "de", "ja"],
         detection: {
             order: ["localStorage", "navigator"],
-            cacheUserSelections: true,
+            caches: ["localStorage"],
         },
     });
 

@@ -59,6 +59,7 @@ function ClerkWithConfig({ children }: { children: React.ReactNode }) {
     const { i18n } = useTranslation();
     return (
         <ClerkProvider
+            publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
             appearance={theme === "dark" ? clerkDark : clerkLight}
             localization={localeMap[i18n.language] ?? enUS}
         >

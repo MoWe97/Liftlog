@@ -76,7 +76,7 @@ function Navbar() {
                         <GithubLogoIcon size={18} />
                     </a>
 
-                    <UserButton afterSignOutUrl="/" />
+                    <UserButton />
                 </div>
             </nav>
 

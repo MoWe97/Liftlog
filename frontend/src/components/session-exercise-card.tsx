@@ -68,7 +68,7 @@ function SessionExerciseCard({ sessionExercise, onDelete }: Props) {
             session_exercise_id: sessionExercise.id,
             unit,
             value,
-            reps: undefined,
+            reps: null,
             duration_seconds: undefined,
         };
         await addSetToStore(sessionExercise.workout_session_id, sessionExercise.id, [tempSet]);
