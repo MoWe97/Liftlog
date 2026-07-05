@@ -1,4 +1,7 @@
 {
+  "legal_page": {
+    "back_to_home": "Back to home"
+  },
   "main_panel": {
     "new_session_button": "New Session",
     "no_workout_session1": "No recorded sessions for this day",

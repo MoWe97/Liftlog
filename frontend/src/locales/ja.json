@@ -1,4 +1,7 @@
 {
+  "legal_page": {
+    "back_to_home": "ホームに戻る"
+  },
   "main_panel": {
     "new_session_button": "新しいセッション",
     "no_workout_session1": "この日のセッションはありません",

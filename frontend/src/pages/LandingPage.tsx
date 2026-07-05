@@ -1,22 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { CalendarDays, Dumbbell, LanguagesIcon, Moon, Sun, TrendingUp } from "lucide-react";
+import { CalendarDays, Dumbbell, TrendingUp } from "lucide-react";
 import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SignInButton, useAuth } from "@clerk/react";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/components/theme-provider";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import PublicNavbar from "@/components/public-navbar";
 
 const features = [
     { icon: CalendarDays, titleKey: "landing_page.feature_1_title", descKey: "landing_page.feature_1_desc" },
@@ -36,8 +26,7 @@ const GoogleIcon = () => (
 function LandingPage() {
     const { isSignedIn, isLoaded } = useAuth();
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
-    const { theme, toggle } = useTheme();
+    const { t } = useTranslation();
     const [agreed, setAgreed] = useState(false);
 
     useEffect(() => {
@@ -46,43 +35,7 @@ function LandingPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-                <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-primary to-orange-300 bg-clip-text text-transparent">
-                    LiftLog
-                </span>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <Sun size={14} className="text-muted-foreground" />
-                        <Switch checked={theme === "dark"} onCheckedChange={toggle} />
-                        <Moon size={14} className="text-muted-foreground" />
-                    </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button className="text-muted-foreground" variant="ghost" size="icon">
-                                <LanguagesIcon />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="min-w-56">
-                            <DropdownMenuGroup>
-                                <DropdownMenuLabel>{t("navbar.lang_select")}</DropdownMenuLabel>
-                                <DropdownMenuRadioGroup value={i18n.language} onValueChange={i18n.changeLanguage}>
-                                    <DropdownMenuRadioItem value="de">Deutsch</DropdownMenuRadioItem>
-                                    <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
-                                    <DropdownMenuRadioItem value="ja">日本語</DropdownMenuRadioItem>
-                                </DropdownMenuRadioGroup>
-                            </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <a
-                        href="https://github.com/MoWe97/liftlog"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <GithubLogoIcon size={20} />
-                    </a>
-                </div>
-            </nav>
+            <PublicNavbar />
 
             <main className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center gap-6">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">

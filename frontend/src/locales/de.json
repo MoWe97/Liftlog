@@ -1,4 +1,7 @@
 {
+  "legal_page": {
+    "back_to_home": "Zurück zur Startseite"
+  },
   "main_panel": {
     "new_session_button": "Neue Einheit",
     "no_workout_session1": "Keine Einheiten für diesen Tag",
