@@ -53,7 +53,12 @@
     "feature_2_desc": "Übungen nach Trainingsart organisieren. Sets mit Gewicht und Wiederholungen erfassen.",
     "feature_3_title": "Konsequent bleiben",
     "feature_3_desc": "Gewohnheiten aufbauen, indem du deine Einheiten wachsen siehst.",
-    "built_by": "Erstellt von MoWe97"
+    "built_by": "Erstellt von MoWe97",
+    "agree_to": "Ich stimme den",
+    "terms": "Nutzungsbedingungen",
+    "and": "und der",
+    "privacy": "Datenschutzerklärung",
+    "agree_suffix": "zu"
   },
   "start_session_dialog": {
     "trigger": "Neue Einheit",

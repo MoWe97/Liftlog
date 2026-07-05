@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CalendarDays, Dumbbell, LanguagesIcon, Moon, Sun, TrendingUp } from "lucide-react";
 import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { SignInButton, useAuth } from "@clerk/react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/components/theme-provider";
@@ -37,6 +38,7 @@ function LandingPage() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const { theme, toggle } = useTheme();
+    const [agreed, setAgreed] = useState(false);
 
     useEffect(() => {
         if (isLoaded && isSignedIn) navigate("/app", { replace: true });
@@ -92,8 +94,22 @@ function LandingPage() {
                 <p className="text-muted-foreground text-lg max-w-md">
                     {t("landing_page.subtitle")}
                 </p>
+                <label className="flex items-center gap-2 text-sm text-muted-foreground mt-2 cursor-pointer">
+                    <Checkbox checked={agreed} onCheckedChange={checked => setAgreed(checked === true)} />
+                    <span>
+                        {t("landing_page.agree_to")}{" "}
+                        <Link to="/terms" onClick={e => e.stopPropagation()} className="underline hover:text-foreground">
+                            {t("landing_page.terms")}
+                        </Link>{" "}
+                        {t("landing_page.and")}{" "}
+                        <Link to="/privacy" onClick={e => e.stopPropagation()} className="underline hover:text-foreground">
+                            {t("landing_page.privacy")}
+                        </Link>{" "}
+                        {t("landing_page.agree_suffix")}
+                    </span>
+                </label>
                 <SignInButton mode="modal">
-                    <Button size="lg" className="gap-2 mt-2">
+                    <Button size="lg" className="gap-2" disabled={!agreed}>
                         <GoogleIcon />
                         {t("landing_page.sign_in")}
                     </Button>

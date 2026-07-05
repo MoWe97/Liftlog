@@ -53,7 +53,12 @@
     "feature_2_desc": "トレーニング種類別に整理。重量と回数でセットを記録。",
     "feature_3_title": "継続する",
     "feature_3_desc": "セッションが積み重なるのを見て習慣を築く。",
-    "built_by": "MoWe97 制作"
+    "built_by": "MoWe97 制作",
+    "agree_to": "",
+    "terms": "利用規約",
+    "and": "と",
+    "privacy": "プライバシーポリシー",
+    "agree_suffix": "に同意します"
   },
   "start_session_dialog": {
     "trigger": "新しいセッション",

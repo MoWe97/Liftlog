@@ -53,7 +53,12 @@
     "feature_2_desc": "Organize exercises by workout type. Add sets with weight and reps.",
     "feature_3_title": "Stay consistent",
     "feature_3_desc": "Build a habit by seeing your sessions stack up over time.",
-    "built_by": "Built by MoWe97"
+    "built_by": "Built by MoWe97",
+    "agree_to": "I agree to the",
+    "terms": "Terms of Service",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "agree_suffix": ""
   },
   "start_session_dialog": {
     "trigger": "New session",
