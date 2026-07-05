@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { CalendarDays, Dumbbell, LanguagesIcon, Moon, Sun, TrendingUp } from "lucide-react";
 import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
@@ -116,15 +116,23 @@ function LandingPage() {
 
             <footer className="px-6 py-6 border-t border-white/10 flex items-center justify-between text-sm text-muted-foreground">
                 <span>{t("landing_page.built_by")}</span>
-                <a
-                    href="https://github.com/MoWe97/liftlog"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-foreground transition-colors flex items-center gap-1.5"
-                >
-                    <GithubLogoIcon size={16} />
-                    GitHub
-                </a>
+                <div className="flex items-center gap-4">
+                    <Link to="/terms" className="hover:text-foreground transition-colors">
+                        Terms
+                    </Link>
+                    <Link to="/privacy" className="hover:text-foreground transition-colors">
+                        Privacy
+                    </Link>
+                    <a
+                        href="https://github.com/MoWe97/liftlog"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-foreground transition-colors flex items-center gap-1.5"
+                    >
+                        <GithubLogoIcon size={16} />
+                        GitHub
+                    </a>
+                </div>
             </footer>
         </div>
     );

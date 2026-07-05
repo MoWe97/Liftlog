@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/sonner.tsx";
 import LandingPage from "@/pages/LandingPage.tsx";
 import HomePage from "@/pages/HomePage.tsx";
 import ManagePage from "@/pages/ManagePage.tsx";
+import TermsOfServicePage from "@/pages/TermsOfServicePage.tsx";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage.tsx";
 import { StrictMode } from "react";
 import { ClerkProvider, useAuth } from "@clerk/react";
 import { dark } from "@clerk/themes";
@@ -62,10 +64,7 @@ function ClerkWithConfig({ children }: { children: React.ReactNode }) {
             publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
             appearance={theme === "dark" ? clerkDark : clerkLight}
             localization={localeMap[i18n.language] ?? enUS}
-        >
-            {children}
-        </ClerkProvider>
-    );
+        > {children} </ClerkProvider>);
 }
 
 function App() {
@@ -78,6 +77,8 @@ function App() {
                             <Route path="/" element={<LandingPage />} />
                             <Route path="/app" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                             <Route path="/app/manage" element={<ProtectedRoute><ManagePage /></ProtectedRoute>} />
+                            <Route path="/terms" element={<TermsOfServicePage />} />
+                            <Route path="/privacy" element={<PrivacyPolicyPage />} />
                         </Routes>
                     </BrowserRouter>
                     <Toaster richColors />
