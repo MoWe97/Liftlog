@@ -2,6 +2,12 @@
   "legal_page": {
     "back_to_home": "Zurück zur Startseite"
   },
+  "terms_gate": {
+    "heading": "Bevor du fortfährst",
+    "description": "Wir haben unsere Nutzungsbedingungen und Datenschutzerklärung aktualisiert. Bitte lies sie durch und stimme ihnen zu, um LiftLog weiter zu nutzen.",
+    "continue": "Weiter",
+    "sign_out": "Stattdessen abmelden"
+  },
   "main_panel": {
     "new_session_button": "Neue Einheit",
     "no_workout_session1": "Keine Einheiten für diesen Tag",

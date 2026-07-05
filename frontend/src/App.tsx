@@ -6,16 +6,19 @@ import HomePage from "@/pages/HomePage.tsx";
 import ManagePage from "@/pages/ManagePage.tsx";
 import TermsOfServicePage from "@/pages/TermsOfServicePage.tsx";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage.tsx";
+import TermsGate from "@/components/terms-gate.tsx";
 import { StrictMode } from "react";
-import { ClerkProvider, useAuth } from "@clerk/react";
+import { ClerkProvider, useAuth, useUser } from "@clerk/react";
 import { dark } from "@clerk/themes";
 import { deDE, jaJP, enUS } from "@clerk/localizations";
 import { useTranslation } from "react-i18next";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isSignedIn, isLoaded } = useAuth();
-    if (!isLoaded) return null;
-    if (!isSignedIn) return <Navigate to="/" replace />;
+    const { user, isLoaded: isUserLoaded } = useUser();
+    if (!isLoaded || !isUserLoaded) return null;
+    if (!isSignedIn || !user) return <Navigate to="/" replace />;
+    if (!user.unsafeMetadata.termsAcceptedAt) return <TermsGate />;
     return <>{children}</>;
 }
 

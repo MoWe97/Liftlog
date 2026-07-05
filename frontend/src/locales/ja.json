@@ -2,6 +2,12 @@
   "legal_page": {
     "back_to_home": "ホームに戻る"
   },
+  "terms_gate": {
+    "heading": "続ける前に",
+    "description": "利用規約とプライバシーポリシーを更新しました。LiftLogを引き続きご利用いただくには、内容をご確認の上、同意してください。",
+    "continue": "続ける",
+    "sign_out": "サインアウトする"
+  },
   "main_panel": {
     "new_session_button": "新しいセッション",
     "no_workout_session1": "この日のセッションはありません",

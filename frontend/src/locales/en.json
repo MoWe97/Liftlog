@@ -2,6 +2,12 @@
   "legal_page": {
     "back_to_home": "Back to home"
   },
+  "terms_gate": {
+    "heading": "Before you continue",
+    "description": "We've updated our Terms of Service and Privacy Policy. Please review and accept them to keep using LiftLog.",
+    "continue": "Continue",
+    "sign_out": "Sign out instead"
+  },
   "main_panel": {
     "new_session_button": "New Session",
     "no_workout_session1": "No recorded sessions for this day",
