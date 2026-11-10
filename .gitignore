@@ -25,3 +25,5 @@ frontend/.env.*.local
 # OS
 .DS_Store
 Thumbs.db
+# Local Claude Code settings (personal permissions)
+.claude/settings.local.json

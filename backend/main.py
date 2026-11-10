@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from database import create_tables
 from routers import exercises, workout_types, workout_sessions, session_exercise, sets
 
@@ -36,6 +37,17 @@ def root():
     return {"message": "LiftLog API"}
 
 
-dist = Path(__file__).parent.parent / "frontend" / "dist"
+dist = (Path(__file__).parent.parent / "frontend" / "dist").resolve()
 if dist.exists():
-    app.mount("/", StaticFiles(directory=str(dist), html=True), name="static")
+    app.mount("/assets", StaticFiles(directory=str(dist / "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def spa(full_path: str):
+        if full_path == "api" or full_path.startswith("api/"):
+            raise HTTPException(status_code=404)
+
+        file_path = (dist / full_path).resolve()
+        if file_path.is_relative_to(dist) and file_path.is_file():
+            return FileResponse(file_path)
+
+        return FileResponse(dist / "index.html")
