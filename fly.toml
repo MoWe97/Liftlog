@@ -4,7 +4,7 @@
 #
 
 app = 'liftlog-frosty-bush-94'
-primary_region = 'ams'
+primary_region = 'fra'
 
 [build]
 
