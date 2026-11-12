@@ -87,3 +87,39 @@ Only `DATABASE_URL` changes in the app.
 
 - Neon pricing and free plan limits: https://neon.com/pricing (checked 2026-11-11)
 - Fly.io pricing: https://fly.io/docs/about/pricing/ (checked 2026-11-11)
+
+## ADR-002: Database connection strings (2026-11-12)
+
+### Context
+
+Neon offers two connection strings per branch: a direct one to Postgres and a pooled one (`-pooler` host) through PgBouncer in transaction mode.
+The backend uses SQLAlchemy with its own connection pool, which keeps connections open between requests.
+Compute is the binding Neon limit (ADR-001), so nothing may keep the database awake.
+
+### What we verified
+
+- **Idle connections do not block scale to zero.**
+  An idle open connection was held for 9 minutes, once pooled and once direct; in both cases the compute went from `active` to `idle` after about 5 minutes (tested 2026-11-12 with `neon postgres computes list`).
+- **Suspend drops connections**, so the engine uses `pool_pre_ping=True` to replace dead connections instead of failing the first request after a pause.
+- **TLS:** both strings use `sslmode=require`; the client connection runs TLS 1.3.
+- **Pooled limitations:** transaction mode does not support SQL-level `PREPARE`, session advisory locks, `SET`/`RESET`, `LISTEN`/`NOTIFY` or temporary tables across transactions.
+  The app uses none of these; SQLAlchemy with psycopg2 does not use server-side prepared statements.
+  Neon recommends direct connections for schema migrations.
+
+### Decision
+
+- **App:** `DATABASE_URL` is the pooled string.
+  It caps server connections in PgBouncer, so more app machines or threads cannot exhaust Postgres connections on the small compute.
+- **Migrations (Alembic, P1-04):** `DATABASE_URL_UNPOOLED` is the direct string, as Neon recommends, so DDL and any session-level state run on one real Postgres session.
+- **SQL logging:** off by default; enabled only with `SQL_ECHO=true` for local debugging.
+- **Postgres version:** 18 on Neon and in local Docker, so development matches production.
+
+### Revisit when
+
+- A feature needs `LISTEN`/`NOTIFY`, advisory locks or session settings (use the direct string for that code path).
+- The app moves to async SQLAlchemy with asyncpg, which uses prepared statements and needs extra configuration behind PgBouncer.
+
+### Sources
+
+- Neon connection pooling: https://neon.com/docs/connect/connection-pooling (checked 2026-11-12)
+- Neon scale to zero: https://neon.com/docs/introduction/scale-to-zero (checked 2026-11-12)

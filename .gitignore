@@ -27,3 +27,4 @@ frontend/.env.*.local
 Thumbs.db
 # Local Claude Code settings (personal permissions)
 .claude/settings.local.json
+.neon
